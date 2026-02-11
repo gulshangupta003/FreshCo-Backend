@@ -1,3 +1,18 @@
 spring:
   application:
     name: freshco-backend
+
+  # ---------- DATABASE ----------
+  datasource:
+    url: jdbc:mysql://localhost:3306/freshco_db?createDatabaseIfNotExist=true
+    username: root
+    password: root1234
+
+  # ---------- JPA ----------
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
