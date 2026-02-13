@@ -1,0 +1,10 @@
+package com.freshco.entity;
+
+public enum OrderStatus {
+    PENDING,
+    CONFIRMED,
+    PROCESSING,
+    OUT_FOR_DELIVERY,
+    DELIVERED,
+    CANCELED
+}
