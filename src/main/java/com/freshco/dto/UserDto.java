@@ -8,7 +8,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegisterResponseDto {
+public class UserDto {
 
     private Long id;
 

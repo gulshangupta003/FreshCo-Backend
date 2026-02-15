@@ -1,29 +1,33 @@
 package com.freshco.controller;
 
+import com.freshco.dto.LoginRequestDto;
 import com.freshco.dto.RegisterRequestDto;
-import com.freshco.dto.RegisterResponseDto;
+import com.freshco.dto.UserDto;
 import com.freshco.service.AuthService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthController {
 
-    private AuthService authService;
+    private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<RegisterResponseDto> register(@Valid @RequestBody RegisterRequestDto requestDto) {
-        RegisterResponseDto responseDto = authService.register(requestDto);
+    public ResponseEntity<UserDto> register(@Valid @RequestBody RegisterRequestDto request) {
+        UserDto response = authService.register(request);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<UserDto> login(@Valid @RequestBody LoginRequestDto request) {
+        UserDto response = authService.login(request);
+
+        return ResponseEntity.ok(response);
+    }
 }
