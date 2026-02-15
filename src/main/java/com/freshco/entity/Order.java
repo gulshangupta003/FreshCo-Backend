@@ -25,11 +25,11 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private OrderStatus status;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "payment_status")
-    private String paymentStatus;
+    private OrderStatus paymentStatus;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

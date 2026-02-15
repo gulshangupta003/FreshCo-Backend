@@ -4,7 +4,7 @@ spring:
 
   # ---------- DATABASE ----------
   datasource:
-    url: jdbc:mysql://localhost:3306/freshco_db?createDatabaseIfNotExist=true?serverTimezone=UTC
+    url: jdbc:mysql://localhost:3306/freshco_db?createDatabaseIfNotExist=true&serverTimezone=UTC
     username: root
     password: root1234
 
