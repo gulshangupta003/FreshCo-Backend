@@ -11,9 +11,9 @@ import java.util.List;
 @Table(name = "users")
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class User {
 
     @Id
@@ -36,7 +36,7 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    private String phone;
+    private String mobileNumber;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
