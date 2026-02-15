@@ -1,25 +1,26 @@
 package com.freshco.service.impl;
 
+import com.freshco.dto.LoginRequestDto;
 import com.freshco.dto.RegisterRequestDto;
-import com.freshco.dto.RegisterResponseDto;
+import com.freshco.dto.UserDto;
 import com.freshco.entity.Role;
 import com.freshco.entity.User;
 import com.freshco.repository.UserRepository;
 import com.freshco.service.AuthService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public RegisterResponseDto register(RegisterRequestDto request) {
+    public UserDto register(RegisterRequestDto request) {
         if (request.getRole() != Role.CUSTOMER) {
             throw new RuntimeException("Only customer registration is allowed.");
         }
@@ -41,12 +42,31 @@ public class AuthServiceImpl implements AuthService {
 
         User savedUser = userRepository.save(user);
 
-        return RegisterResponseDto.builder()
+        return UserDto.builder()
                 .id(savedUser.getId())
                 .firstName(savedUser.getFirstName())
                 .lastName(savedUser.getLastName())
                 .email(savedUser.getEmail())
                 .role(savedUser.getRole())
+                .build();
+    }
+
+    @Override
+    public UserDto login(LoginRequestDto request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid email or password");
+        }
+
+        return UserDto.builder()
+                .id(user.getId())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .email(user.getEmail())
+                .mobileNumber(user.getMobileNumber())
+                .role(user.getRole())
                 .build();
     }
 
