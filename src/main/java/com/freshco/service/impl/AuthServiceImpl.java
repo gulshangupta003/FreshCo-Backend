@@ -8,7 +8,6 @@ import com.freshco.entity.User;
 import com.freshco.repository.UserRepository;
 import com.freshco.service.AuthService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,8 +15,6 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDto register(RegisterRequestDto request) {
@@ -36,7 +33,7 @@ public class AuthServiceImpl implements AuthService {
                 .lastName(request.getLastName())
                 .email(request.getEmail())
                 .mobileNumber(request.getMobileNumber())
-                .password(passwordEncoder.encode(request.getPassword()))
+                .password(request.getPassword())
                 .role(request.getRole())
                 .build();
 
@@ -56,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid email or password"));
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!request.getPassword().equals(user.getPassword())) {
             throw new RuntimeException("Invalid email or password");
         }
 
