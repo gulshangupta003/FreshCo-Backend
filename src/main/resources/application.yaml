@@ -16,3 +16,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+  security:
+    user:
+      name: admin
+      password: admin
+
+app:
+  jwt:
+    secret: FreshcoBackendSecret
+    expiration-milliseconds: 86400000
+
+server:
+  port: 8080
