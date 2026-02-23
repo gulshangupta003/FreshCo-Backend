@@ -44,21 +44,25 @@ public class JwtService {
                 .compact();
     }
 
-    public boolean validateToken(String token, String username) {
+    public String extractValidUsername(String token) {
         try {
             Claims claims = jwtParser
                     .parseSignedClaims(token)
                     .getPayload();
 
-            String subject = claims.getSubject();
-
-            if (subject == null || subject.isEmpty()) {
-                throw new JwtAuthenticationException("JWT token is missing the subject claim", HttpStatus.BAD_REQUEST);
+            Date expiration = claims.getExpiration();
+            if (expiration == null || expiration.before(new Date())) {
+                throw new JwtAuthenticationException("Token has expired", HttpStatus.UNAUTHORIZED);
             }
 
-            return username.equals(subject);
+            String subject = claims.getSubject();
+            if (subject == null || subject.isEmpty()) {
+                throw new JwtAuthenticationException("Token missing subject", HttpStatus.BAD_REQUEST);
+            }
+
+            return subject;
         } catch (ExpiredJwtException e) {
-            throw new JwtAuthenticationException("JWT Token has expired", HttpStatus.UNAUTHORIZED, e);
+            throw new JwtAuthenticationException("Token has expired", HttpStatus.UNAUTHORIZED, e);
         } catch (MalformedJwtException e) {
             throw new JwtAuthenticationException("Malformed JWT token", HttpStatus.BAD_REQUEST, e);
         } catch (UnsupportedJwtException e) {
@@ -69,6 +73,13 @@ public class JwtService {
             throw new JwtAuthenticationException("JWT claims string is empty or null", HttpStatus.BAD_REQUEST, e);
         } catch (JwtException e) {
             throw new JwtAuthenticationException("JWT validation error", HttpStatus.BAD_REQUEST, e);
+        }
+    }
+
+    public void validateToken(String token, String username) {
+        String extractedUsername = extractValidUsername(token);
+        if (!username.equals(extractedUsername)) {
+            throw new JwtAuthenticationException("Username mismatch", HttpStatus.UNAUTHORIZED);
         }
     }
 
