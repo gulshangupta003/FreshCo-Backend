@@ -1,4 +1,4 @@
-package com.freshco.dto;
+package com.freshco.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

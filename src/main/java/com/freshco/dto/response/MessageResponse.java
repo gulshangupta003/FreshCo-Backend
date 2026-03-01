@@ -1,4 +1,4 @@
-package com.freshco.dto;
+package com.freshco.dto.response;
 
 import lombok.*;
 
