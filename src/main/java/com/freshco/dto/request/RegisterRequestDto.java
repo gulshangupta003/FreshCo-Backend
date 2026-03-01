@@ -1,4 +1,4 @@
-package com.freshco.dto;
+package com.freshco.dto.request;
 
 import com.freshco.entity.Role;
 import jakarta.validation.constraints.*;

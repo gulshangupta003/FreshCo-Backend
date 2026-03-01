@@ -1,8 +1,8 @@
 package com.freshco.service.impl;
 
-import com.freshco.dto.LoginRequestDto;
-import com.freshco.dto.RegisterRequestDto;
-import com.freshco.dto.UserDto;
+import com.freshco.dto.request.LoginRequestDto;
+import com.freshco.dto.request.RegisterRequestDto;
+import com.freshco.dto.response.UserDto;
 import com.freshco.entity.Role;
 import com.freshco.entity.User;
 import com.freshco.repository.UserRepository;
