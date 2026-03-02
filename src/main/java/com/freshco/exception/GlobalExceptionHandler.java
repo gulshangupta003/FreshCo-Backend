@@ -19,6 +19,7 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // 400: Validation errors (from @Valid)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidationException(MethodArgumentNotValidException e) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failed");
@@ -36,6 +37,7 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    // 401: Bad credentials
     @ExceptionHandler(BadCredentialsException.class)
     public ProblemDetail handleBadCredentialsException() {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Invalid email or password");
@@ -46,6 +48,18 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    // 404: Resource not found
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ProblemDetail handleResourceNotFoundException(ResourceNotFoundException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, e.getMessage());
+        problemDetail.setTitle("Resource Not Found");
+        problemDetail.setType(URI.create("https://api.freshco.com/errors/not-found"));
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return problemDetail;
+    }
+
+    // 409: Duplicate resource
     @ExceptionHandler(DuplicateResourceException.class)
     public ProblemDetail handleDuplicateResourceException(DuplicateResourceException e) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, e.getMessage());
@@ -56,6 +70,7 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
+    // All
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<MessageResponse> handleRuntimeException(RuntimeException ex) {
         return ResponseEntity
