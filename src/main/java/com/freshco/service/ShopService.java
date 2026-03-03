@@ -5,6 +5,6 @@ import com.freshco.dto.ShopResponseDto;
 
 public interface ShopService {
 
-    ShopResponseDto createShop(ShopRequestDto request, String sellerEmail);
+    ShopResponseDto createShop(ShopRequestDto request, Long sellerId);
 
 }

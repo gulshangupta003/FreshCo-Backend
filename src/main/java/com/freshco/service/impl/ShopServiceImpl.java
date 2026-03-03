@@ -23,9 +23,9 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional
-    public ShopResponseDto createShop(ShopRequestDto request, String sellerEmail) {
-        User seller = userRepository.findByEmail(sellerEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("User", "email", sellerEmail));
+    public ShopResponseDto createShop(ShopRequestDto request, Long sellerId) {
+        User seller = userRepository.findById(sellerId)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "sellerId", sellerId));
 
         if (shopRepository.existsByOwnerId(seller.getId())) {
             throw new DuplicateResourceException("You already have a shop");

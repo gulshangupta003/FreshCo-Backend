@@ -4,6 +4,7 @@ import com.freshco.dto.ShopRequestDto;
 import com.freshco.dto.ShopResponseDto;
 import com.freshco.security.CustomUserDetails;
 import com.freshco.service.ShopService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,10 +25,10 @@ public class ShopController {
     @PostMapping
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ShopResponseDto> createShop(
-            @RequestBody ShopRequestDto request,
+            @Valid @RequestBody ShopRequestDto request,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        ShopResponseDto response = shopService.createShop(request, userDetails.getUsername());
+        ShopResponseDto response = shopService.createShop(request, userDetails.getUser().getId());
 
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
