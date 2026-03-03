@@ -44,6 +44,15 @@ public class ShopServiceImpl implements ShopService {
         return mapToShopResponseDto(savedShop);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ShopResponseDto getShopById(Long id) {
+        Shop shop = shopRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Shop", "id", id));
+
+        return mapToShopResponseDto(shop);
+    }
+
     private ShopResponseDto mapToShopResponseDto(Shop shop) {
         return ShopResponseDto.builder()
                 .id(shop.getId())

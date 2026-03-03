@@ -7,4 +7,6 @@ public interface ShopService {
 
     ShopResponseDto createShop(ShopRequestDto request, Long sellerId);
 
+    ShopResponseDto getShopById(Long id);
+
 }
