@@ -34,8 +34,8 @@ public class Shop {
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", unique = true)
     private User owner;
 
     @OneToMany(mappedBy = "shop")
