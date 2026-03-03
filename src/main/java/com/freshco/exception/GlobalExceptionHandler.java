@@ -1,9 +1,11 @@
 package com.freshco.exception;
 
-import com.freshco.dto.response.MessageResponse;
+//import com.freshco.dto.response.MessageResponse;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
+//import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,7 +24,8 @@ public class GlobalExceptionHandler {
     // 400: Validation errors (from @Valid)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidationException(MethodArgumentNotValidException e) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, "Validation failed");
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
+                "Validation failed");
         problemDetail.setTitle("Validation Error");
         problemDetail.setType(URI.create("https://api.freshco.com/errors/validation"));
         problemDetail.setProperty("timestamp", Instant.now());
@@ -40,7 +43,8 @@ public class GlobalExceptionHandler {
     // 401: Bad credentials
     @ExceptionHandler(BadCredentialsException.class)
     public ProblemDetail handleBadCredentialsException() {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED, "Invalid email or password");
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.UNAUTHORIZED,
+                "Invalid email or password");
         problemDetail.setTitle("Authentication Failed");
         problemDetail.setType(URI.create("https://api.freshco.com/errors/authentication"));
         problemDetail.setProperty("timestamp", Instant.now());
@@ -70,12 +74,41 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
-    // All
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<MessageResponse> handleRuntimeException(RuntimeException ex) {
-        return ResponseEntity
-                .badRequest()
-                .body(new MessageResponse(ex.getMessage()));
+    // 400: Malformed request body (invalid JSON, bad enum values)
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ProblemDetail handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        String message = "Malformed request body";
+
+        Throwable cause = e.getCause();
+        if (cause != null && cause.getCause() instanceof IllegalArgumentException illegalArgumentException) {
+            message = illegalArgumentException.getMessage();
+        }
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message);
+        problemDetail.setTitle("Bad Request");
+        problemDetail.setType(URI.create("https://api.freshco.com/errors/conflict"));
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return problemDetail;
     }
+
+    // 400: Bad request
+    @ExceptionHandler(BadRequestException.class)
+    public ProblemDetail handleBadRequestException(BadRequestException e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
+        problemDetail.setTitle("Bad Request");
+        problemDetail.setType(URI.create("https://api.freshco.com/errors/conflict"));
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return problemDetail;
+    }
+
+    // All
+//    @ExceptionHandler(RuntimeException.class)
+//    public ResponseEntity<MessageResponse> handleRuntimeException(RuntimeException ex) {
+//        return ResponseEntity
+//                .badRequest()
+//                .body(new MessageResponse(ex.getMessage()));
+//    }
 
 }

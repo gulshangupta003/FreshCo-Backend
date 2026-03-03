@@ -17,6 +17,7 @@ spring:
       hibernate:
         format_sql: true
 
+  # ---------- JACKSON ----------
   security:
     user:
       name: admin

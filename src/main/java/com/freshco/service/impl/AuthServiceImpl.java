@@ -5,6 +5,7 @@ import com.freshco.dto.request.RegisterRequestDto;
 import com.freshco.dto.response.UserDto;
 import com.freshco.entity.Role;
 import com.freshco.entity.User;
+import com.freshco.exception.BadRequestException;
 import com.freshco.repository.UserRepository;
 import com.freshco.security.CustomUserDetails;
 import com.freshco.security.JwtService;
@@ -30,14 +31,13 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDto register(RegisterRequestDto request) {
-        if (request.getRole() != Role.CUSTOMER) {
-            throw new RuntimeException("Only customer registration is allowed.");
+        if (request.getRole() == Role.ADMIN) {
+            throw new RuntimeException("Admin registration is not allowed");
         }
 
         String email = request.getEmail().trim().toLowerCase();
-
         if (userRepository.existsByEmail(email)) {
-            throw new RuntimeException("Email already exists");
+            throw new BadRequestException("Email already exists: " + email);
         }
 
         User user = User.builder()
@@ -54,14 +54,7 @@ public class AuthServiceImpl implements AuthService {
 
         String jwtToken = jwtService.generateToken(email);
 
-        return UserDto.builder()
-                .id(savedUser.getId())
-                .firstName(savedUser.getFirstName())
-                .lastName(savedUser.getLastName())
-                .email(savedUser.getEmail())
-                .role(savedUser.getRole())
-                .token(jwtToken)
-                .build();
+        return mapToUserDto(savedUser, jwtToken);
     }
 
     @Override
@@ -74,13 +67,17 @@ public class AuthServiceImpl implements AuthService {
         );
 
         if (!(authentication.getPrincipal() instanceof CustomUserDetails customUserDetails)) {
-            throw new RuntimeException("Authentication failed: Unexpected principal type");
+            throw new BadRequestException("Authentication failed: Unexpected principal type");
         }
 
         User user = customUserDetails.getUser();
 
         String jwtToken = jwtService.generateToken(user.getEmail());
 
+        return mapToUserDto(user, jwtToken);
+    }
+
+    private UserDto mapToUserDto(User user, String token) {
         return UserDto.builder()
                 .id(user.getId())
                 .firstName(user.getFirstName())
@@ -88,7 +85,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(user.getEmail())
                 .mobileNumber(user.getMobileNumber())
                 .role(user.getRole())
-                .token(jwtToken)
+                .token(token)
                 .build();
     }
 
