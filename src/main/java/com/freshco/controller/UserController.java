@@ -18,8 +18,8 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/me")
-    public ResponseEntity<UserProfileDto> getMyProfile(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        UserProfileDto response = userService.getMyProfile(userDetails.getUsername());
+    public ResponseEntity<UserProfileDto> getMyProfile(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        UserProfileDto response = userService.getMyProfile(customUserDetails.getUser().getId());
 
         return ResponseEntity.ok(response);
     }

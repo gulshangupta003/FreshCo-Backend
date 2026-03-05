@@ -126,11 +126,17 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<MessageResponse> handleRuntimeException(RuntimeException ex) {
-        return ResponseEntity
-                .badRequest()
-                .body(new MessageResponse(ex.getMessage()));
+    @ExceptionHandler(Exception.class)
+    public ProblemDetail handleGenericException(Exception e) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                "An unexpected error occurred. Please try again later."
+        );
+        problemDetail.setTitle("Internal Server Error");
+        problemDetail.setType(URI.create("https://api.freshco.com/errors/internal"));
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return problemDetail;
     }
 
 }

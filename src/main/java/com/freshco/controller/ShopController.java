@@ -41,7 +41,7 @@ public class ShopController {
 
     @GetMapping
     public ResponseEntity<List<ShopResponseDto>> getAllShops() {
-        List<ShopResponseDto> response = shopService.getALlShops();
+        List<ShopResponseDto> response = shopService.getAllShops();
 
         return ResponseEntity.ok(response);
     }

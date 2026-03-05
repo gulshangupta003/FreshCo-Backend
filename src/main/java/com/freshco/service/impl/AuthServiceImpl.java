@@ -32,7 +32,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserDto register(RegisterRequestDto request) {
         if (request.getRole() == Role.ADMIN) {
-            throw new RuntimeException("Admin registration is not allowed");
+            throw new BadRequestException("Admin registration is not allowed");
         }
 
         String email = request.getEmail().trim().toLowerCase();

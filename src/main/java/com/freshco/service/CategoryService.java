@@ -1,7 +1,7 @@
 package com.freshco.service;
 
 import com.freshco.dto.request.CategoryRequestDto;
-import com.freshco.dto.request.CategoryResponseDto;
+import com.freshco.dto.response.CategoryResponseDto;
 
 import java.util.List;
 
