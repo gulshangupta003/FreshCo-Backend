@@ -12,6 +12,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/shops")
 @RequiredArgsConstructor
@@ -33,6 +35,13 @@ public class ShopController {
     @GetMapping("{id}")
     public ResponseEntity<ShopResponseDto> getShopById(@PathVariable Long id) {
         ShopResponseDto response = shopService.getShopById(id);
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ShopResponseDto>> getAllShops() {
+        List<ShopResponseDto> response = shopService.getALlShops();
 
         return ResponseEntity.ok(response);
     }

@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ShopServiceImpl implements ShopService {
@@ -51,6 +53,14 @@ public class ShopServiceImpl implements ShopService {
                 .orElseThrow(() -> new ResourceNotFoundException("Shop", "id", id));
 
         return mapToShopResponseDto(shop);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ShopResponseDto> getALlShops() {
+        return shopRepository.findAll().stream()
+                .map(this::mapToShopResponseDto)
+                .toList();
     }
 
     private ShopResponseDto mapToShopResponseDto(Shop shop) {
