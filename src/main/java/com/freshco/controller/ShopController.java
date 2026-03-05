@@ -58,4 +58,15 @@ public class ShopController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("{id}")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<Void> deleteShop(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        shopService.deleteShop(id, customUserDetails.getUser().getId());
+
+        return ResponseEntity.noContent().build();
+    }
+
 }
