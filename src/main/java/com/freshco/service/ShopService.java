@@ -13,4 +13,6 @@ public interface ShopService {
 
     List<ShopResponseDto> getALlShops();
 
+    ShopResponseDto updateShop(Long shopId, ShopRequestDto request, Long sellerId);
+
 }
