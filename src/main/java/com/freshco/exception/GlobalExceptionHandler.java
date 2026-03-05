@@ -1,41 +1,64 @@
 package com.freshco.exception;
 
-//import com.freshco.dto.response.MessageResponse;
-
+import com.freshco.dto.response.MessageResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-//import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.validation.FieldError;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
 import java.net.URI;
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    // 401: delegated from CustomAuthenticationEntryPoint
+    @ExceptionHandler(AuthenticationException.class)
+    public ProblemDetail handleAuthenticationException(AuthenticationException e, WebRequest request) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.UNAUTHORIZED,
+                "Full authentication is required to access this resource"
+        );
+        problemDetail.setTitle("Authentication failure");
+        problemDetail.setType(URI.create("https://api.freshco.com/errors/authentication"));
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return problemDetail;
+    }
+
+    // 403: delegated from CustomAccessDeniedHandler
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail handleAccessDeniedException(AccessDeniedException e, WebRequest request) {
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.FORBIDDEN,
+                "You do not have permission to perform this action"
+        );
+        problemDetail.setTitle("Access Denied");
+        problemDetail.setType(URI.create("https://api.freshco.com/errors/forbidden"));
+        problemDetail.setProperty("timestamp", Instant.now());
+
+        return problemDetail;
+    }
+
     // 400: Validation errors (from @Valid)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ProblemDetail handleValidationException(MethodArgumentNotValidException e) {
-        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST,
-                "Validation failed");
-        problemDetail.setTitle("Validation Error");
+        String errors = e.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+
+        ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, errors);
+        problemDetail.setTitle("Validation Failed");
         problemDetail.setType(URI.create("https://api.freshco.com/errors/validation"));
         problemDetail.setProperty("timestamp", Instant.now());
-
-        Map<String, String> errors = new HashMap<>();
-        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
-        for (FieldError fieldError : fieldErrors) {
-            errors.put(fieldError.getField(), fieldError.getDefaultMessage());
-        }
-        problemDetail.setProperty("error", errors);
 
         return problemDetail;
     }
@@ -103,12 +126,11 @@ public class GlobalExceptionHandler {
         return problemDetail;
     }
 
-    // All
-//    @ExceptionHandler(RuntimeException.class)
-//    public ResponseEntity<MessageResponse> handleRuntimeException(RuntimeException ex) {
-//        return ResponseEntity
-//                .badRequest()
-//                .body(new MessageResponse(ex.getMessage()));
-//    }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<MessageResponse> handleRuntimeException(RuntimeException ex) {
+        return ResponseEntity
+                .badRequest()
+                .body(new MessageResponse(ex.getMessage()));
+    }
 
 }
