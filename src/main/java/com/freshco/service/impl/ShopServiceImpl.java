@@ -10,6 +10,7 @@ import com.freshco.repository.ShopRepository;
 import com.freshco.repository.UserRepository;
 import com.freshco.service.ShopService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,8 +50,7 @@ public class ShopServiceImpl implements ShopService {
     @Override
     @Transactional(readOnly = true)
     public ShopResponseDto getShopById(Long id) {
-        Shop shop = shopRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Shop", "id", id));
+        Shop shop = findShopById(id);
 
         return mapToShopResponseDto(shop);
     }
@@ -61,6 +61,30 @@ public class ShopServiceImpl implements ShopService {
         return shopRepository.findAll().stream()
                 .map(this::mapToShopResponseDto)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public ShopResponseDto updateShop(Long shopId, ShopRequestDto request, Long sellerId) {
+        Shop shop = findShopById(shopId);
+
+        if (!shop.getOwner().getId().equals(sellerId)) {
+            throw new AccessDeniedException("You can only update your own shop");
+        }
+
+        shop.setName(request.getName().trim());
+        shop.setAddressLine(request.getAddressLine());
+        shop.setCity(request.getCity().trim());
+        shop.setImageUrl(request.getImageUrl());
+
+        Shop updatedShop = shopRepository.save(shop);
+
+        return mapToShopResponseDto(updatedShop);
+    }
+
+    private Shop findShopById(Long shopId) {
+        return shopRepository.findById(shopId)
+                .orElseThrow(() -> new ResourceNotFoundException("Shop", "id", shopId));
     }
 
     private ShopResponseDto mapToShopResponseDto(Shop shop) {

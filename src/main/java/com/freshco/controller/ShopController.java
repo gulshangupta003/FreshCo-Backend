@@ -46,4 +46,16 @@ public class ShopController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("{id}")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<ShopResponseDto> updateShop(
+            @PathVariable Long id,
+            @Valid @RequestBody ShopRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        ShopResponseDto response = shopService.updateShop(id, request, customUserDetails.getUser().getId());
+
+        return ResponseEntity.ok(response);
+    }
+
 }
