@@ -82,6 +82,18 @@ public class ShopServiceImpl implements ShopService {
         return mapToShopResponseDto(updatedShop);
     }
 
+    @Override
+    @Transactional
+    public void deleteShop(Long shopId, Long sellerId) {
+        Shop shop = findShopById(shopId);
+
+        if (!shop.getOwner().getId().equals(sellerId)) {
+            throw new AccessDeniedException("You can only delete your own shop");
+        }
+
+        shopRepository.delete(shop);
+    }
+
     private Shop findShopById(Long shopId) {
         return shopRepository.findById(shopId)
                 .orElseThrow(() -> new ResourceNotFoundException("Shop", "id", shopId));
