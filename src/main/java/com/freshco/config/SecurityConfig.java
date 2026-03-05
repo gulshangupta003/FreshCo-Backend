@@ -1,5 +1,6 @@
 package com.freshco.config;
 
+import com.freshco.security.CustomAccessDeniedHandler;
 import com.freshco.security.CustomAuthenticationEntryPoint;
 import com.freshco.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class SecurityConfig {
 
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -43,6 +46,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/roles/**").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .anyRequest().authenticated()
                 )
 
@@ -52,6 +56,7 @@ public class SecurityConfig {
 
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
                 )
 
                 .authenticationProvider(authenticationProvider())
