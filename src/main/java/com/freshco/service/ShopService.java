@@ -11,7 +11,7 @@ public interface ShopService {
 
     ShopResponseDto getShopById(Long id);
 
-    List<ShopResponseDto> getALlShops();
+    List<ShopResponseDto> getAllShops();
 
     ShopResponseDto updateShop(Long shopId, ShopRequestDto request, Long sellerId);
 

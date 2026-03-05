@@ -4,6 +4,6 @@ import com.freshco.dto.UserProfileDto;
 
 public interface UserService {
 
-    UserProfileDto getMyProfile(String email);
+    UserProfileDto getMyProfile(Long userId);
 
 }

@@ -1,7 +1,7 @@
 package com.freshco.controller;
 
 import com.freshco.dto.request.CategoryRequestDto;
-import com.freshco.dto.request.CategoryResponseDto;
+import com.freshco.dto.response.CategoryResponseDto;
 import com.freshco.service.CategoryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

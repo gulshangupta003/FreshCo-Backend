@@ -1,7 +1,7 @@
 package com.freshco.service.impl;
 
 import com.freshco.dto.request.CategoryRequestDto;
-import com.freshco.dto.request.CategoryResponseDto;
+import com.freshco.dto.response.CategoryResponseDto;
 import com.freshco.entity.Category;
 import com.freshco.exception.DuplicateResourceException;
 import com.freshco.exception.ResourceNotFoundException;

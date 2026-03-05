@@ -57,7 +57,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ShopResponseDto> getALlShops() {
+    public List<ShopResponseDto> getAllShops() {
         return shopRepository.findAll().stream()
                 .map(this::mapToShopResponseDto)
                 .toList();
