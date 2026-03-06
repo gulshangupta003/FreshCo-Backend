@@ -11,6 +11,7 @@ import com.freshco.repository.ProductRepository;
 import com.freshco.repository.ShopRepository;
 import com.freshco.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,6 +74,31 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findByShopId(shopId).stream()
                 .map(this::mapToProductResponseDto)
                 .toList();
+    }
+
+    @Override
+    @Transactional
+    public ProductResponseDto updateProduct(Long productId, ProductRequestDto request, Long sellerId) {
+        Product product = findProductById(productId);
+
+        if (!product.getShop().getOwner().getId().equals(sellerId)) {
+            throw new AccessDeniedException("You can only update products in our own shop");
+        }
+
+        Category category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new ResourceNotFoundException("Category", "id", request.getCategoryId()));
+
+        product.setName(request.getName());
+        product.setDescription(request.getDescription());
+        product.setPrice(request.getPrice());
+        product.setQuantity(request.getQuantity());
+        product.setUnit(request.getUnit());
+        product.setImageUrl(request.getImageUrl());
+        product.setCategory(category);
+
+        Product updatedProduct = productRepository.save(product);
+
+        return mapToProductResponseDto(updatedProduct);
     }
 
     private Product findProductById(Long productId) {

@@ -45,4 +45,16 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<ProductResponseDto> updateProduct(
+            @PathVariable Long id,
+            @RequestBody ProductRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        ProductResponseDto response = productService.updateProduct(id, request, customUserDetails.getUser().getId());
+
+        return ResponseEntity.ok(response);
+    }
+
 }
