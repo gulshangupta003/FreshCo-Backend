@@ -67,6 +67,14 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductResponseDto> getProductsByShopId(Long shopId) {
+        return productRepository.findByShopId(shopId).stream()
+                .map(this::mapToProductResponseDto)
+                .toList();
+    }
+
     private Product findProductById(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
@@ -90,4 +98,5 @@ public class ProductServiceImpl implements ProductService {
                 .categoryName(product.getCategory().getName())
                 .build();
     }
+
 }

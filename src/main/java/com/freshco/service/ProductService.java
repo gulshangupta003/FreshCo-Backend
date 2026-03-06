@@ -13,4 +13,6 @@ public interface ProductService {
 
     List<ProductResponseDto> getAllProducts();
 
+    List<ProductResponseDto> getProductsByShopId(Long shopId);
+
 }
