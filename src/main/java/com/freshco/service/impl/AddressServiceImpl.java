@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
@@ -52,6 +54,14 @@ public class AddressServiceImpl implements AddressService {
         Address savedAddress = addressRepository.save(address);
 
         return mapToAddressResponseDto(savedAddress);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AddressResponseDto> getMyAddresses(Long userId) {
+        return addressRepository.findByUserId(userId).stream()
+                .map(this::mapToAddressResponseDto)
+                .toList();
     }
 
     private AddressResponseDto mapToAddressResponseDto(Address address) {
