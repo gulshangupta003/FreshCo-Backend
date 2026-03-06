@@ -15,4 +15,6 @@ public interface ProductService {
 
     List<ProductResponseDto> getProductsByShopId(Long shopId);
 
+    ProductResponseDto updateProduct(Long productId, ProductRequestDto request, Long sellerId);
+
 }
