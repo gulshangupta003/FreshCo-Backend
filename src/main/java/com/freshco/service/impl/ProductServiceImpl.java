@@ -49,6 +49,19 @@ public class ProductServiceImpl implements ProductService {
         return mapToProductResponseDto(savedProduct);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ProductResponseDto getProductById(Long productId) {
+        Product product = findProductById(productId);
+
+        return mapToProductResponseDto(product);
+    }
+
+    private Product findProductById(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+    }
+
     private ProductResponseDto mapToProductResponseDto(Product product) {
         return ProductResponseDto.builder()
                 .id(product.getId())

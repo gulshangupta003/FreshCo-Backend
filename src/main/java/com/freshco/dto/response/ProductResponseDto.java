@@ -28,10 +28,6 @@ public class ProductResponseDto {
 
     private boolean active;
 
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
     private Long shopId;
 
     private String shopName;
@@ -39,5 +35,9 @@ public class ProductResponseDto {
     private Long categoryId;
 
     private String categoryName;
+
+    private LocalDateTime createdAt;
+
+    private LocalDateTime updatedAt;
 
 }
