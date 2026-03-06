@@ -1,7 +1,7 @@
 package com.freshco.controller;
 
-import com.freshco.dto.ShopRequestDto;
-import com.freshco.dto.ShopResponseDto;
+import com.freshco.dto.request.ShopRequestDto;
+import com.freshco.dto.response.ShopResponseDto;
 import com.freshco.security.CustomUserDetails;
 import com.freshco.service.ShopService;
 import jakarta.validation.Valid;
