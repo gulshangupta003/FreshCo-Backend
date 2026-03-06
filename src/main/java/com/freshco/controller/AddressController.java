@@ -39,4 +39,15 @@ public class AddressController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<AddressResponseDto> updateResponse(
+            @PathVariable Long id,
+            @Valid @RequestBody AddressRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        AddressResponseDto response = addressService.updateAddress(id, request, customUserDetails.getUser().getId());
+
+        return ResponseEntity.ok(response);
+    }
+
 }
