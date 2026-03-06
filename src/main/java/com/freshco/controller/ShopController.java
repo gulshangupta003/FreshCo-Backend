@@ -1,8 +1,10 @@
 package com.freshco.controller;
 
 import com.freshco.dto.request.ShopRequestDto;
+import com.freshco.dto.response.ProductResponseDto;
 import com.freshco.dto.response.ShopResponseDto;
 import com.freshco.security.CustomUserDetails;
+import com.freshco.service.ProductService;
 import com.freshco.service.ShopService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,8 @@ import java.util.List;
 public class ShopController {
 
     private final ShopService shopService;
+
+    private final ProductService productService;
 
     @PostMapping
     @PreAuthorize("hasRole('SELLER')")
@@ -67,6 +71,13 @@ public class ShopController {
         shopService.deleteShop(id, customUserDetails.getUser().getId());
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{shopId}/products")
+    public ResponseEntity<List<ProductResponseDto>> getProductsByShopId(@PathVariable Long shopId) {
+        List<ProductResponseDto> response = productService.getProductsByShopId(shopId);
+
+        return ResponseEntity.ok(response);
     }
 
 }
