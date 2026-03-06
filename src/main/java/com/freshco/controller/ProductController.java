@@ -1,0 +1,35 @@
+package com.freshco.controller;
+
+import com.freshco.dto.request.ProductRequestDto;
+import com.freshco.dto.response.ProductResponseDto;
+import com.freshco.security.CustomUserDetails;
+import com.freshco.service.ProductService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/products")
+@RequiredArgsConstructor
+public class ProductController {
+
+    private final ProductService productService;
+
+    @PostMapping
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<ProductResponseDto> createProduct(
+            @RequestBody ProductRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        ProductResponseDto response = productService.createProduct(request, customUserDetails.getUser().getId());
+
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+}

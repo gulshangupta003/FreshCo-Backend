@@ -1,7 +1,7 @@
 package com.freshco.service.impl;
 
-import com.freshco.dto.ShopRequestDto;
-import com.freshco.dto.ShopResponseDto;
+import com.freshco.dto.request.ShopRequestDto;
+import com.freshco.dto.response.ShopResponseDto;
 import com.freshco.entity.Shop;
 import com.freshco.entity.User;
 import com.freshco.exception.DuplicateResourceException;

@@ -1,7 +1,7 @@
 package com.freshco.service;
 
-import com.freshco.dto.ShopRequestDto;
-import com.freshco.dto.ShopResponseDto;
+import com.freshco.dto.request.ShopRequestDto;
+import com.freshco.dto.response.ShopResponseDto;
 
 import java.util.List;
 
