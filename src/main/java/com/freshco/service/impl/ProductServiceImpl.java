@@ -101,6 +101,18 @@ public class ProductServiceImpl implements ProductService {
         return mapToProductResponseDto(updatedProduct);
     }
 
+    @Override
+    @Transactional
+    public void deleteProduct(Long productId, Long sellerId) {
+        Product product = findProductById(productId);
+
+        if (!product.getShop().getOwner().getId().equals(sellerId)) {
+            throw new AccessDeniedException("You can only delete products in your own shop");
+        }
+
+        productRepository.delete(product);
+    }
+
     private Product findProductById(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
