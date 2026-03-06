@@ -58,6 +58,7 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<Void> deleteProduct(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
