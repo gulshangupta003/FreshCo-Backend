@@ -88,6 +88,27 @@ public class AddressServiceImpl implements AddressService {
         return mapToAddressResponseDto(updatedAddress);
     }
 
+    @Override
+    @Transactional
+    public void deleteAddress(Long addressId, Long userId) {
+        Address address = findAddressById(addressId);
+
+        if (!address.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("You can only delete your own address");
+        }
+
+        addressRepository.delete(address);
+
+        if (address.isDefault()) {
+            addressRepository.findByUserId(userId).stream()
+                    .findFirst()
+                    .ifPresent(nextAddress -> {
+                        nextAddress.setDefault(true);
+                        addressRepository.save(nextAddress);
+                    });
+        }
+    }
+
     private Address findAddressById(Long addressId) {
         return addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));

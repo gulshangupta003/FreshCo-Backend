@@ -50,4 +50,14 @@ public class AddressController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAddress(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        addressService.deleteAddress(id, customUserDetails.getUser().getId());
+
+        return ResponseEntity.noContent().build();
+    }
+
 }
