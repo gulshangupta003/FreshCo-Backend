@@ -13,4 +13,6 @@ public interface AddressService {
 
     AddressResponseDto updateAddress(Long addressId, AddressRequestDto request, Long userId);
 
+    void deleteAddress(Long addressId, Long userId);
+
 }
