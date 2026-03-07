@@ -60,4 +60,14 @@ public class AddressController {
         return ResponseEntity.noContent().build();
     }
 
+    @PatchMapping("/{id}/default")
+    public ResponseEntity<AddressResponseDto> setDefaultAddress(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        AddressResponseDto response = addressService.setDefaultAddress(id, customUserDetails.getUser().getId());
+
+        return ResponseEntity.ok(response);
+    }
+
 }

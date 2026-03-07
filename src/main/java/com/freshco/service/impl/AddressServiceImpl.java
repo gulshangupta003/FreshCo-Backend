@@ -109,6 +109,33 @@ public class AddressServiceImpl implements AddressService {
         }
     }
 
+    @Override
+    @Transactional
+    public AddressResponseDto setDefaultAddress(Long addressId, Long userId) {
+        Address address = findAddressById(addressId);
+
+        if (!address.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("You can only update your own address");
+        }
+
+        if (address.isDefault()) {
+            return mapToAddressResponseDto(address);
+        }
+
+        addressRepository.findByUserId(userId).stream()
+                .filter(Address::isDefault)
+                .findFirst()
+                .ifPresent(currentDefault -> {
+                    currentDefault.setDefault(false);
+                    addressRepository.save(currentDefault);
+                });
+
+        address.setDefault(true);
+        Address updatedDefaultAddress = addressRepository.save(address);
+
+        return mapToAddressResponseDto(updatedDefaultAddress);
+    }
+
     private Address findAddressById(Long addressId) {
         return addressRepository.findById(addressId)
                 .orElseThrow(() -> new ResourceNotFoundException("Address", "id", addressId));
