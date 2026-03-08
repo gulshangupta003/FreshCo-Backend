@@ -1,6 +1,7 @@
 package com.freshco.controller;
 
 import com.freshco.dto.request.AddToCartRequestDto;
+import com.freshco.dto.request.UpdateCartItemQuantityRequestDto;
 import com.freshco.dto.response.CartResponseDto;
 import com.freshco.security.CustomUserDetails;
 import com.freshco.service.CartService;
@@ -31,6 +32,17 @@ public class CartController {
     @GetMapping
     public ResponseEntity<CartResponseDto> getCart(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         CartResponseDto response = cartService.getCart(customUserDetails.getUser().getId());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/items/{id}")
+    public ResponseEntity<CartResponseDto> updateCartItemQuantity(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateCartItemQuantityRequestDto request,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        CartResponseDto response = cartService.updateCartItemQuantity(id, request.getQuantity(), customUserDetails.getUser().getId());
 
         return ResponseEntity.ok(response);
     }

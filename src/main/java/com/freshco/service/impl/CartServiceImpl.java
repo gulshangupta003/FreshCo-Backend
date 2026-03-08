@@ -116,6 +116,26 @@ public class CartServiceImpl implements CartService {
         return mapToCartResponseDto(cart);
     }
 
+    @Override
+    @Transactional
+    public CartResponseDto updateCartItemQuantity(Long cartItemId, int quantity, Long userId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItemId));
+
+        if (!cartItem.getCart().getUser().getId().equals(userId)) {
+            throw new BadRequestException("You can only update your own cart");
+        }
+
+        if (cartItem.getProduct().getQuantity() < quantity) {
+            throw new BadRequestException("Not enough stock. Available: " + cartItem.getProduct().getQuantity());
+        }
+
+        cartItem.setQuantity(quantity);
+        cartItemRepository.save(cartItem);
+
+        return mapToCartResponseDto(cartItem.getCart());
+    }
+
     private CartResponseDto mapToCartResponseDto(Cart cart) {
         List<CartItemResponseDto> cartItems = cart.getItems().stream()
                 .map(this::mapToCartItemResponseDto)
