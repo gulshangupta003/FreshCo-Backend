@@ -9,4 +9,6 @@ public interface CartService {
 
     CartResponseDto getCart(Long userId);
 
+    CartResponseDto updateCartItemQuantity(Long cartItemId, int quantity, Long userId);
+
 }
