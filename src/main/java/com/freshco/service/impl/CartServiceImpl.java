@@ -99,6 +99,23 @@ public class CartServiceImpl implements CartService {
         return mapToCartResponseDto(savedCart);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public CartResponseDto getCart(Long userId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElse(null);
+
+        if (cart == null) {
+            return CartResponseDto.builder()
+                    .items(List.of())
+                    .totalItems(0)
+                    .totalAmount(BigDecimal.ZERO)
+                    .build();
+        }
+
+        return mapToCartResponseDto(cart);
+    }
+
     private CartResponseDto mapToCartResponseDto(Cart cart) {
         List<CartItemResponseDto> cartItems = cart.getItems().stream()
                 .map(this::mapToCartItemResponseDto)

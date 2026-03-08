@@ -7,4 +7,6 @@ public interface CartService {
 
     CartResponseDto addToCart(AddToCartRequestDto request, Long userId);
 
+    CartResponseDto getCart(Long userId);
+
 }
