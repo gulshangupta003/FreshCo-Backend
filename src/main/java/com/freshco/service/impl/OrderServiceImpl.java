@@ -6,10 +6,7 @@ import com.freshco.dto.response.OrderResponseDto;
 import com.freshco.entity.*;
 import com.freshco.exception.BadRequestException;
 import com.freshco.exception.ResourceNotFoundException;
-import com.freshco.repository.AddressRepository;
-import com.freshco.repository.CartRepository;
-import com.freshco.repository.OrderRepository;
-import com.freshco.repository.ProductRepository;
+import com.freshco.repository.*;
 import com.freshco.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -31,6 +28,8 @@ public class OrderServiceImpl implements OrderService {
     private final AddressRepository addressRepository;
 
     private final ProductRepository productRepository;
+
+    private final ShopRepository shopRepository;
 
     @Override
     @Transactional
@@ -119,8 +118,23 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrderResponseDto> getMyOrders(Long userId) {
-        return orderRepository.findByCustomerIdOrderByCreatedAtDesc(userId).stream()
+    public List<OrderResponseDto> getMyOrders(Long customerId) {
+        return orderRepository.findByCustomerIdOrderByCreatedAtDesc(customerId).stream()
+                .map(this::mapToOrderResponseDto)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderResponseDto> getShopOrders(Long shopId, Long sellerId) {
+        Shop shop = shopRepository.findById(shopId)
+                .orElseThrow(() -> new ResourceNotFoundException("Shop", "id", shopId));
+
+        if (!shop.getOwner().getId().equals(sellerId)) {
+            throw new AccessDeniedException("You can only view orders for your own shop");
+        }
+
+        return orderRepository.findByShopIdOrderByCreatedAtDesc(shopId).stream()
                 .map(this::mapToOrderResponseDto)
                 .toList();
     }
