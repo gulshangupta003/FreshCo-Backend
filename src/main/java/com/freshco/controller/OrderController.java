@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
@@ -34,6 +36,15 @@ public class OrderController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         OrderResponseDto response = orderService.getOrderById(id, customUserDetails.getUser().getId());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<OrderResponseDto>> getMyOrders(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        List<OrderResponseDto> response = orderService.getMyOrders(customUserDetails.getUser().getId());
 
         return ResponseEntity.ok(response);
     }

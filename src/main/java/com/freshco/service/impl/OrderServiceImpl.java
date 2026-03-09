@@ -117,6 +117,14 @@ public class OrderServiceImpl implements OrderService {
         return mapToOrderResponseDto(order);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<OrderResponseDto> getMyOrders(Long userId) {
+        return orderRepository.findByCustomerIdOrderByCreatedAtDesc(userId).stream()
+                .map(this::mapToOrderResponseDto)
+                .toList();
+    }
+
     private OrderResponseDto mapToOrderResponseDto(Order order) {
         List<OrderItemResponseDto> orderItems = order.getOrderItems().stream()
                 .map(this::mapToOrderItemResponseDto)
