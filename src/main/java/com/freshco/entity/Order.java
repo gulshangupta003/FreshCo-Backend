@@ -33,6 +33,10 @@ public class Order {
     @Column(name = "payment_status")
     private PaymentStatus paymentStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "payment_method", nullable = false)
+    private PaymentMethod paymentMethod;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
