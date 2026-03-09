@@ -11,6 +11,8 @@ public interface OrderService {
 
     OrderResponseDto getOrderById(Long orderId, Long userId);
 
-    List<OrderResponseDto> getMyOrders(Long userId);
+    List<OrderResponseDto> getMyOrders(Long customerId);
+
+    List<OrderResponseDto> getShopOrders(Long shopId, Long sellerId);
 
 }
