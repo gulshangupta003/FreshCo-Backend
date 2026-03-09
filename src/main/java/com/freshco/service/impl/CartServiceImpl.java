@@ -160,6 +160,28 @@ public class CartServiceImpl implements CartService {
         return mapToCartResponseDto(saveCart);
     }
 
+    @Override
+    @Transactional
+    public CartResponseDto clearCart(Long userId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElse(null);
+
+        if (cart == null) {
+            return CartResponseDto.builder()
+                    .items(List.of())
+                    .totalItems(0)
+                    .totalAmount(BigDecimal.ZERO)
+                    .build();
+        }
+
+        cart.getCartItems().clear();
+        cart.setShop(null);
+
+        Cart savedCart = cartRepository.save(cart);
+
+        return mapToCartResponseDto(savedCart);
+    }
+
     private CartResponseDto mapToCartResponseDto(Cart cart) {
         List<CartItemResponseDto> cartItems = cart.getCartItems().stream()
                 .map(this::mapToCartItemResponseDto)
