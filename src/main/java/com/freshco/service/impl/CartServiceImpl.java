@@ -15,6 +15,7 @@ import com.freshco.repository.ProductRepository;
 import com.freshco.repository.UserRepository;
 import com.freshco.service.CartService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -91,7 +92,7 @@ public class CartServiceImpl implements CartService {
                     .quantity(request.getQuantity())
                     .build();
 
-            cart.getItems().add(newCartItem);
+            cart.getCartItems().add(newCartItem);
         }
 
         Cart savedCart = cartRepository.save(cart);
@@ -136,8 +137,31 @@ public class CartServiceImpl implements CartService {
         return mapToCartResponseDto(cartItem.getCart());
     }
 
+    @Override
+    @Transactional
+    public CartResponseDto removeCartItem(Long cartItemId, Long userId) {
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItemId));
+
+        Cart cart = cartItem.getCart();
+
+        if (!cart.getUser().getId().equals(userId)) {
+            throw new AccessDeniedException("You can only update your own cart");
+        }
+
+        cart.getCartItems().remove(cartItem);
+
+        if (cart.getCartItems().isEmpty()) {
+            cart.setShop(null);
+        }
+
+        Cart saveCart = cartRepository.save(cart);
+
+        return mapToCartResponseDto(saveCart);
+    }
+
     private CartResponseDto mapToCartResponseDto(Cart cart) {
-        List<CartItemResponseDto> cartItems = cart.getItems().stream()
+        List<CartItemResponseDto> cartItems = cart.getCartItems().stream()
                 .map(this::mapToCartItemResponseDto)
                 .toList();
 
