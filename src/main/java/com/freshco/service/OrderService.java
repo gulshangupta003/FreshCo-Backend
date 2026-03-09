@@ -7,4 +7,6 @@ public interface OrderService {
 
     OrderResponseDto placeOrder(PlaceOrderRequestDto request, Long userId);
 
+    OrderResponseDto getOrderById(Long orderId, Long userId);
+
 }
