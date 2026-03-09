@@ -101,6 +101,22 @@ public class OrderServiceImpl implements OrderService {
         return mapToOrderResponseDto(savedOrder);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public OrderResponseDto getOrderById(Long orderId, Long userId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+
+        boolean isCustomer = order.getCustomer().getId().equals(userId);
+        boolean isSeller = order.getShop().getOwner().getId().equals(userId);
+
+        if (!isCustomer && !isSeller) {
+            throw new AccessDeniedException("You don't have access to this order");
+        }
+
+        return mapToOrderResponseDto(order);
+    }
+
     private OrderResponseDto mapToOrderResponseDto(Order order) {
         List<OrderItemResponseDto> orderItems = order.getOrderItems().stream()
                 .map(this::mapToOrderItemResponseDto)
