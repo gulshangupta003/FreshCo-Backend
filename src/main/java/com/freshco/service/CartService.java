@@ -13,4 +13,6 @@ public interface CartService {
 
     CartResponseDto removeCartItem(Long cartItemId, Long userId);
 
+    CartResponseDto clearCart(Long userId);
+
 }

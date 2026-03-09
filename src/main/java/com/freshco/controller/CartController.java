@@ -57,4 +57,11 @@ public class CartController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping
+    public ResponseEntity<CartResponseDto> clearCart(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        CartResponseDto response = cartService.clearCart(customUserDetails.getUser().getId());
+
+        return ResponseEntity.ok(response);
+    }
+
 }
