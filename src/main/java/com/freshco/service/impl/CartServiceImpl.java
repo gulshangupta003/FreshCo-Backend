@@ -124,7 +124,7 @@ public class CartServiceImpl implements CartService {
                 .orElseThrow(() -> new ResourceNotFoundException("CartItem", "id", cartItemId));
 
         if (!cartItem.getCart().getUser().getId().equals(userId)) {
-            throw new BadRequestException("You can only update your own cart");
+            throw new AccessDeniedException("You can only update your own cart");
         }
 
         if (cartItem.getProduct().getQuantity() < quantity) {

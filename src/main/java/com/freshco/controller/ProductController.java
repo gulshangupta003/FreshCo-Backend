@@ -4,6 +4,7 @@ import com.freshco.dto.request.ProductRequestDto;
 import com.freshco.dto.response.ProductResponseDto;
 import com.freshco.security.CustomUserDetails;
 import com.freshco.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,7 @@ public class ProductController {
     @PostMapping
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ProductResponseDto> createProduct(
-            @RequestBody ProductRequestDto request,
+            @Valid @RequestBody ProductRequestDto request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         ProductResponseDto response = productService.createProduct(request, customUserDetails.getUser().getId());
@@ -49,7 +50,7 @@ public class ProductController {
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ProductResponseDto> updateProduct(
             @PathVariable Long id,
-            @RequestBody ProductRequestDto request,
+            @Valid @RequestBody ProductRequestDto request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         ProductResponseDto response = productService.updateProduct(id, request, customUserDetails.getUser().getId());

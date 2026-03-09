@@ -1,9 +1,7 @@
 package com.freshco.exception;
 
-import com.freshco.dto.response.MessageResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -109,7 +107,7 @@ public class GlobalExceptionHandler {
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, message);
         problemDetail.setTitle("Bad Request");
-        problemDetail.setType(URI.create("https://api.freshco.com/errors/conflict"));
+        problemDetail.setType(URI.create("https://api.freshco.com/errors/bad-request"));
         problemDetail.setProperty("timestamp", Instant.now());
 
         return problemDetail;
@@ -120,7 +118,7 @@ public class GlobalExceptionHandler {
     public ProblemDetail handleBadRequestException(BadRequestException e) {
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, e.getMessage());
         problemDetail.setTitle("Bad Request");
-        problemDetail.setType(URI.create("https://api.freshco.com/errors/conflict"));
+        problemDetail.setType(URI.create("https://api.freshco.com/errors/bad-request"));
         problemDetail.setProperty("timestamp", Instant.now());
 
         return problemDetail;
