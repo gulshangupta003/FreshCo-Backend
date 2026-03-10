@@ -168,6 +168,30 @@ public class OrderServiceImpl implements OrderService {
         return mapToOrderResponseDto(savedOrder);
     }
 
+    @Override
+    @Transactional
+    public OrderResponseDto cancelOrder(Long orderId, Long userId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+
+        if (!order.getCustomer().getId().equals(userId)) {
+            throw new AccessDeniedException("You can only cancel your own order");
+        }
+
+        if (order.getStatus() != OrderStatus.PENDING) {
+            throw new BadRequestException("Cannot cancel order in " + order.getStatus() + " status. " +
+                    "You can only cancel when order is pending");
+        }
+
+        order.setStatus(OrderStatus.CANCELED);
+
+        restoreStock(order);
+
+        Order savedOrder = orderRepository.save(order);
+
+        return mapToOrderResponseDto(savedOrder);
+    }
+
     private OrderStatus parseOrderStatus(String status) {
         try {
             return OrderStatus.valueOf(status.toUpperCase());
