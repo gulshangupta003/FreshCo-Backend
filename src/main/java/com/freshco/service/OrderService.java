@@ -17,4 +17,6 @@ public interface OrderService {
 
     OrderResponseDto updateOrderStatus(Long orderId, String status, Long sellerId);
 
+    OrderResponseDto cancelOrder(Long orderId, Long userId);
+
 }
