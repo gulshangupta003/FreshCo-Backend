@@ -15,4 +15,6 @@ public interface OrderService {
 
     List<OrderResponseDto> getShopOrders(Long shopId, Long sellerId);
 
+    OrderResponseDto updateOrderStatus(Long orderId, String status, Long sellerId);
+
 }

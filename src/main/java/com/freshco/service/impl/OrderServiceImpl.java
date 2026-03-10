@@ -139,6 +139,90 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
+    @Override
+    @Transactional
+    public OrderResponseDto updateOrderStatus(Long orderId, String status, Long sellerId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", orderId));
+
+        if (!order.getShop().getOwner().getId().equals(sellerId)) {
+            throw new AccessDeniedException("You can only update order from your own shop");
+        }
+
+        OrderStatus newStatus = parseOrderStatus(status);
+
+        validateOrderStatusTransition(order.getStatus(), newStatus);
+
+        order.setStatus(newStatus);
+
+        if (newStatus == OrderStatus.DELIVERED && order.getPaymentMethod() == PaymentMethod.CASH_ON_DELIVERY) {
+            order.setPaymentStatus(PaymentStatus.PAID);
+        }
+
+        if (newStatus == OrderStatus.CANCELED) {
+            restoreStock(order);
+        }
+
+        Order savedOrder = orderRepository.save(order);
+
+        return mapToOrderResponseDto(savedOrder);
+    }
+
+    private OrderStatus parseOrderStatus(String status) {
+        try {
+            return OrderStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("Invalid order status: " + status);
+        }
+    }
+
+    private void validateOrderStatusTransition(OrderStatus current, OrderStatus next) {
+        if (current == OrderStatus.DELIVERED) {
+            throw new BadRequestException("Order is already delivered");
+        }
+
+        if (current == OrderStatus.CANCELED) {
+            throw new BadRequestException("Order is already cancelled");
+        }
+
+        if (current == next) {
+            throw new BadRequestException("Order is already " + current.name());
+        }
+
+        if (next == OrderStatus.CANCELED) {
+            if (current != OrderStatus.PENDING && current != OrderStatus.CONFIRMED) {
+                throw new BadRequestException("Cannot cancel order in " + current.name() + " status. " +
+                        "Cancellation is only allowed when PENDING or CONFIRMED.");
+            }
+            return;
+        }
+
+        if (next.ordinal() != current.ordinal() + 1) {
+            throw new BadRequestException("Cannot change status from " + current.name() + " to " + next.name() + ". " +
+                    "Next valid status: " + getNextValidStatus(current));
+        }
+    }
+
+    private String getNextValidStatus(OrderStatus current) {
+        return switch (current) {
+            case PENDING -> "CONFIRMED or CANCELED";
+            case CONFIRMED -> "PROCESSING or CANCELED";
+            case PROCESSING -> "OUT_FOR_DELIVERY";
+            case OUT_FOR_DELIVERY -> "DELIVERED";
+            default -> "non (final status)";
+        };
+    }
+
+    private void restoreStock(Order order) {
+        for (OrderItem orderItem : order.getOrderItems()) {
+            Product product = orderItem.getProduct();
+            product.setQuantity(product.getQuantity() + orderItem.getQuantity());
+
+            productRepository.save(product);
+        }
+    }
+
+
     private OrderResponseDto mapToOrderResponseDto(Order order) {
         List<OrderItemResponseDto> orderItems = order.getOrderItems().stream()
                 .map(this::mapToOrderItemResponseDto)
