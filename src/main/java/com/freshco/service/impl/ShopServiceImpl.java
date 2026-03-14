@@ -108,6 +108,7 @@ public class ShopServiceImpl implements ShopService {
                 .imageUrl(shop.getImageUrl())
                 .createdAt(shop.getCreatedAt())
                 .ownerId(shop.getOwner().getId())
+                .ownerName(shop.getOwner().getFirstName() + " " + shop.getOwner().getLastName())
                 .build();
     }
 
