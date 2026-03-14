@@ -2,7 +2,9 @@ package com.freshco.controller;
 
 import com.freshco.dto.request.CategoryRequestDto;
 import com.freshco.dto.response.CategoryResponseDto;
+import com.freshco.dto.response.ProductResponseDto;
 import com.freshco.service.CategoryService;
+import com.freshco.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,6 +19,8 @@ import java.util.List;
 public class CategoryController {
 
     private final CategoryService categoryService;
+
+    private final ProductService productService;
 
     @PostMapping
     public ResponseEntity<CategoryResponseDto> createCategory(@Valid @RequestBody CategoryRequestDto request) {
@@ -54,6 +58,13 @@ public class CategoryController {
         categoryService.deleteCategory(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/products")
+    public ResponseEntity<List<ProductResponseDto>> getProductsByCategoryId(@PathVariable Long id) {
+        List<ProductResponseDto> response = productService.getProductsByCategoryId(id);
+
+        return ResponseEntity.ok(response);
     }
 
 }
