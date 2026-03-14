@@ -113,6 +113,14 @@ public class ProductServiceImpl implements ProductService {
         productRepository.delete(product);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductResponseDto> getProductsByCategoryId(Long categoryId) {
+        return productRepository.findByCategoryId(categoryId).stream()
+                .map(this::mapToProductResponseDto)
+                .toList();
+    }
+
     private Product findProductById(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
