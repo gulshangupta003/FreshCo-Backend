@@ -25,4 +25,6 @@ public class ShopResponseDto {
 
     private Long ownerId;
 
+    private String ownerName;
+
 }
