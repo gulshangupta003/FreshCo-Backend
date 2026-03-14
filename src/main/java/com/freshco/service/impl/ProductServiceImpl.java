@@ -121,6 +121,18 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductResponseDto> searchProducts(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return List.of();
+        }
+
+        return productRepository.findByNameContainingIgnoreCase(keyword).stream()
+                .map(this::mapToProductResponseDto)
+                .toList();
+    }
+
     private Product findProductById(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
