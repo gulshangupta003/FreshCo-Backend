@@ -94,6 +94,15 @@ public class ShopServiceImpl implements ShopService {
         shopRepository.delete(shop);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ShopResponseDto getMyShop(Long sellerId) {
+        Shop shop = shopRepository.findByOwnerId(sellerId)
+                .orElseThrow(() -> new ResourceNotFoundException("You don't have shop yet. Create a shop first"));
+
+        return mapToShopResponseDto(shop);
+    }
+
     private Shop findShopById(Long shopId) {
         return shopRepository.findById(shopId)
                 .orElseThrow(() -> new ResourceNotFoundException("Shop", "id", shopId));
