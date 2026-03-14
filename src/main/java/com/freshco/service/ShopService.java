@@ -17,4 +17,6 @@ public interface ShopService {
 
     void deleteShop(Long shopId, Long sellerId);
 
+    ShopResponseDto getMyShop(Long sellerId);
+
 }

@@ -95,4 +95,12 @@ public class ShopController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/me")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<ShopResponseDto> getMyShop(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        ShopResponseDto response = shopService.getMyShop(customUserDetails.getUser().getId());
+
+        return ResponseEntity.ok(response);
+    }
+
 }
