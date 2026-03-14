@@ -21,4 +21,6 @@ public interface ProductService {
 
     List<ProductResponseDto> getProductsByCategoryId(Long categoryId);
 
+    List<ProductResponseDto> searchProducts(String keyword);
+
 }
