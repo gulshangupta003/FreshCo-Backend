@@ -1,6 +1,7 @@
 package com.freshco.service.impl;
 
 import com.freshco.dto.request.ProductRequestDto;
+import com.freshco.dto.response.PagedResponseDto;
 import com.freshco.dto.response.ProductResponseDto;
 import com.freshco.entity.Category;
 import com.freshco.entity.Product;
@@ -11,6 +12,10 @@ import com.freshco.repository.ProductRepository;
 import com.freshco.repository.ShopRepository;
 import com.freshco.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,12 +65,33 @@ public class ProductServiceImpl implements ProductService {
         return mapToProductResponseDto(product);
     }
 
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<ProductResponseDto> getAllProducts() {
+//        return productRepository.findAll().stream()
+//                .map(this::mapToProductResponseDto)
+//                .toList();
+//    }
+
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponseDto> getAllProducts() {
-        return productRepository.findAll().stream()
+    public PagedResponseDto<ProductResponseDto> getAllProducts(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<Product> productPage = productRepository.findAll(pageable);
+
+        List<ProductResponseDto> content = productPage.getContent().stream()
                 .map(this::mapToProductResponseDto)
                 .toList();
+
+        return PagedResponseDto.<ProductResponseDto>builder()
+                .content(content)
+                .page(productPage.getNumber())
+                .size(productPage.getSize())
+                .totalElements(productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .last(productPage.isLast())
+                .build();
     }
 
     @Override
