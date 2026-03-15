@@ -1,6 +1,7 @@
 package com.freshco.service.impl;
 
 import com.freshco.dto.request.PlaceOrderRequestDto;
+import com.freshco.dto.response.OrderCountResponseDto;
 import com.freshco.dto.response.OrderItemResponseDto;
 import com.freshco.dto.response.OrderResponseDto;
 import com.freshco.entity.*;
@@ -190,6 +191,25 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
 
         return mapToOrderResponseDto(savedOrder);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrderCountResponseDto getShopOrderCount(Long sellerId) {
+        Shop shop = shopRepository.findByOwnerId(sellerId)
+                .orElseThrow(() -> new ResourceNotFoundException("You don't have a shop yet."));
+
+        Long shopId = shop.getId();
+
+        return OrderCountResponseDto.builder()
+                .totalOrders(orderRepository.countByShopId(shopId))
+                .pendingOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.PENDING))
+                .conformedOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.CONFIRMED))
+                .processingOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.PROCESSING))
+                .outForDeliveryOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.OUT_FOR_DELIVERY))
+                .deliveredOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.DELIVERED))
+                .cancelledOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.CANCELED))
+                .build();
     }
 
     private OrderStatus parseOrderStatus(String status) {
