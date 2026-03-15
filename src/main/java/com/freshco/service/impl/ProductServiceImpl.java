@@ -78,8 +78,8 @@ public class ProductServiceImpl implements ProductService {
 
         return PagedResponseDto.<ProductResponseDto>builder()
                 .content(content)
-                .page(page)
-                .size(size)
+                .page(productPage.getNumber())
+                .size(productPage.getSize())
                 .totalElements(productPage.getTotalElements())
                 .totalPages(productPage.getTotalPages())
                 .last(productPage.isLast())
@@ -177,8 +177,8 @@ public class ProductServiceImpl implements ProductService {
 
         return PagedResponseDto.<ProductResponseDto>builder()
                 .content(content)
-                .page(page)
-                .size(size)
+                .page(productPage.getNumber())
+                .size(productPage.getSize())
                 .totalElements(productPage.getTotalElements())
                 .totalPages(productPage.getTotalPages())
                 .last(productPage.isLast())
