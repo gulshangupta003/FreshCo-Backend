@@ -23,4 +23,6 @@ public interface ProductService {
 
     List<ProductResponseDto> searchProducts(String keyword);
 
+    ProductResponseDto toggleProductActive(Long productId, Long sellerId);
+
 }

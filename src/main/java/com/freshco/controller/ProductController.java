@@ -76,4 +76,15 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+    @PatchMapping("/{id}/active")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<ProductResponseDto> toggleProductActive(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        ProductResponseDto response = productService.toggleProductActive(id, customUserDetails.getUser().getId());
+
+        return ResponseEntity.ok(response);
+    }
+
 }

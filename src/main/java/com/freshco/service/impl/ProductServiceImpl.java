@@ -133,6 +133,23 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
     }
 
+    @Override
+    @Transactional
+    public ProductResponseDto toggleProductActive(Long productId, Long sellerId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));
+
+        if (!product.getShop().getOwner().getId().equals(sellerId)) {
+            throw new AccessDeniedException("You can only update product in your own shop");
+        }
+
+        product.setActive(!product.isActive());
+
+        Product savedProduct = productRepository.save(product);
+
+        return mapToProductResponseDto(savedProduct);
+    }
+
     private Product findProductById(Long productId) {
         return productRepository.findById(productId)
                 .orElseThrow(() -> new ResourceNotFoundException("Product", "id", productId));

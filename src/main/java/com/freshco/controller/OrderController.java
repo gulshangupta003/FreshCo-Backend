@@ -22,6 +22,7 @@ public class OrderController {
 
     private final OrderService orderService;
 
+    // ToDo: While checkout product should be active
     @PostMapping
     public ResponseEntity<OrderResponseDto> placeOrder(
             @Valid @RequestBody PlaceOrderRequestDto request,
