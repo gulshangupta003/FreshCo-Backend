@@ -12,19 +12,15 @@ public interface ProductService {
 
     ProductResponseDto getProductById(Long productId);
 
-//    List<ProductResponseDto> getAllProducts();
-
     PagedResponseDto<ProductResponseDto> getAllProducts(int page, int size);
 
-    List<ProductResponseDto> getProductsByShopId(Long shopId);
+    PagedResponseDto<ProductResponseDto> getProductsByShopId(Long shopId, int page, int size);
 
     ProductResponseDto updateProduct(Long productId, ProductRequestDto request, Long sellerId);
 
     void deleteProduct(Long productId, Long sellerId);
 
     List<ProductResponseDto> getProductsByCategoryId(Long categoryId);
-
-//    List<ProductResponseDto> searchProducts(String keyword);
 
     PagedResponseDto<ProductResponseDto> searchProducts(String keyword, int page, int size);
 

@@ -1,10 +1,7 @@
 package com.freshco.controller;
 
 import com.freshco.dto.request.ShopRequestDto;
-import com.freshco.dto.response.OrderCountResponseDto;
-import com.freshco.dto.response.OrderResponseDto;
-import com.freshco.dto.response.ProductResponseDto;
-import com.freshco.dto.response.ShopResponseDto;
+import com.freshco.dto.response.*;
 import com.freshco.security.CustomUserDetails;
 import com.freshco.service.OrderService;
 import com.freshco.service.ProductService;
@@ -79,8 +76,12 @@ public class ShopController {
     }
 
     @GetMapping("/{shopId}/products")
-    public ResponseEntity<List<ProductResponseDto>> getProductsByShopId(@PathVariable Long shopId) {
-        List<ProductResponseDto> response = productService.getProductsByShopId(shopId);
+    public ResponseEntity<PagedResponseDto<ProductResponseDto>> getProductsByShopId(
+            @PathVariable Long shopId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PagedResponseDto<ProductResponseDto> response = productService.getProductsByShopId(shopId, page, size);
 
         return ResponseEntity.ok(response);
     }
