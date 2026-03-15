@@ -24,7 +24,9 @@ public interface ProductService {
 
     List<ProductResponseDto> getProductsByCategoryId(Long categoryId);
 
-    List<ProductResponseDto> searchProducts(String keyword);
+//    List<ProductResponseDto> searchProducts(String keyword);
+
+    PagedResponseDto<ProductResponseDto> searchProducts(String keyword, int page, int size);
 
     ProductResponseDto toggleProductActive(Long productId, Long sellerId);
 
