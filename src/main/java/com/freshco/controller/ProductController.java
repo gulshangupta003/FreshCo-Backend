@@ -1,6 +1,7 @@
 package com.freshco.controller;
 
 import com.freshco.dto.request.ProductRequestDto;
+import com.freshco.dto.response.PagedResponseDto;
 import com.freshco.dto.response.ProductResponseDto;
 import com.freshco.security.CustomUserDetails;
 import com.freshco.service.ProductService;
@@ -39,12 +40,23 @@ public class ProductController {
         return ResponseEntity.ok(response);
     }
 
+//    @GetMapping
+//    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
+//        List<ProductResponseDto> response = productService.getAllProducts();
+//
+//        return ResponseEntity.ok(response);
+//    }
+
     @GetMapping
-    public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
-        List<ProductResponseDto> response = productService.getAllProducts();
+    public ResponseEntity<PagedResponseDto<ProductResponseDto>> getAllProducts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PagedResponseDto<ProductResponseDto> response = productService.getAllProducts(page, size);
 
         return ResponseEntity.ok(response);
     }
+
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('SELLER')")

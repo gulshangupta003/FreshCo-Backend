@@ -1,6 +1,7 @@
 package com.freshco.service;
 
 import com.freshco.dto.request.ProductRequestDto;
+import com.freshco.dto.response.PagedResponseDto;
 import com.freshco.dto.response.ProductResponseDto;
 
 import java.util.List;
@@ -11,7 +12,9 @@ public interface ProductService {
 
     ProductResponseDto getProductById(Long productId);
 
-    List<ProductResponseDto> getAllProducts();
+//    List<ProductResponseDto> getAllProducts();
+
+    PagedResponseDto<ProductResponseDto> getAllProducts(int page, int size);
 
     List<ProductResponseDto> getProductsByShopId(Long shopId);
 
