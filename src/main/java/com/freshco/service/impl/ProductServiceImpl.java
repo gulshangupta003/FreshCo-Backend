@@ -65,13 +65,26 @@ public class ProductServiceImpl implements ProductService {
         return mapToProductResponseDto(product);
     }
 
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<ProductResponseDto> getAllProducts() {
-//        return productRepository.findAll().stream()
-//                .map(this::mapToProductResponseDto)
-//                .toList();
-//    }
+    @Override
+    @Transactional(readOnly = true)
+    public PagedResponseDto<ProductResponseDto> getProductsByShopId(Long shopId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<Product> productPage = productRepository.findByShopId(shopId, pageable);
+
+        List<ProductResponseDto> content = productPage.getContent().stream()
+                .map(this::mapToProductResponseDto)
+                .toList();
+
+        return PagedResponseDto.<ProductResponseDto>builder()
+                .content(content)
+                .page(page)
+                .size(size)
+                .totalElements(productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .last(productPage.isLast())
+                .build();
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -94,13 +107,6 @@ public class ProductServiceImpl implements ProductService {
                 .build();
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductResponseDto> getProductsByShopId(Long shopId) {
-        return productRepository.findByShopId(shopId).stream()
-                .map(this::mapToProductResponseDto)
-                .toList();
-    }
 
     @Override
     @Transactional
@@ -146,18 +152,6 @@ public class ProductServiceImpl implements ProductService {
                 .map(this::mapToProductResponseDto)
                 .toList();
     }
-
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<ProductResponseDto> searchProducts(String keyword) {
-//        if (keyword == null || keyword.trim().isEmpty()) {
-//            return List.of();
-//        }
-//
-//        return productRepository.findByNameContainingIgnoreCase(keyword).stream()
-//                .map(this::mapToProductResponseDto)
-//                .toList();
-//    }
 
     @Override
     @Transactional(readOnly = true)
