@@ -81,9 +81,20 @@ public class ProductController {
         return ResponseEntity.noContent().build();
     }
 
+//    @GetMapping("/search")
+//    public ResponseEntity<List<ProductResponseDto>> searchProducts(@RequestParam(name = "q") String keyword) {
+//        List<ProductResponseDto> response = productService.searchProducts(keyword);
+//
+//        return ResponseEntity.ok(response);
+//    }
+
     @GetMapping("/search")
-    public ResponseEntity<List<ProductResponseDto>> searchProducts(@RequestParam(name = "q") String keyword) {
-        List<ProductResponseDto> response = productService.searchProducts(keyword);
+    public ResponseEntity<PagedResponseDto<ProductResponseDto>> searchProducts(
+            @RequestParam(name = "q") String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PagedResponseDto<ProductResponseDto> response = productService.searchProducts(keyword, page, size);
 
         return ResponseEntity.ok(response);
     }

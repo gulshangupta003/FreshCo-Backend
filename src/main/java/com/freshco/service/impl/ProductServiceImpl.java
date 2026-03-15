@@ -147,16 +147,48 @@ public class ProductServiceImpl implements ProductService {
                 .toList();
     }
 
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<ProductResponseDto> searchProducts(String keyword) {
+//        if (keyword == null || keyword.trim().isEmpty()) {
+//            return List.of();
+//        }
+//
+//        return productRepository.findByNameContainingIgnoreCase(keyword).stream()
+//                .map(this::mapToProductResponseDto)
+//                .toList();
+//    }
+
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponseDto> searchProducts(String keyword) {
-        if (keyword == null || keyword.trim().isEmpty()) {
-            return List.of();
+    public PagedResponseDto<ProductResponseDto> searchProducts(String keyword, int page, int size) {
+        if (keyword == null || keyword.trim().isBlank()) {
+            return PagedResponseDto.<ProductResponseDto>builder()
+                    .content(List.of())
+                    .page(page)
+                    .size(size)
+                    .totalElements(0)
+                    .totalPages(0)
+                    .last(true)
+                    .build();
         }
 
-        return productRepository.findByNameContainingIgnoreCase(keyword).stream()
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<Product> productPage = productRepository.findByNameContainingIgnoreCase(keyword.trim(), pageable);
+
+        List<ProductResponseDto> content = productPage.getContent().stream()
                 .map(this::mapToProductResponseDto)
                 .toList();
+
+        return PagedResponseDto.<ProductResponseDto>builder()
+                .content(content)
+                .page(page)
+                .size(size)
+                .totalElements(productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .last(productPage.isLast())
+                .build();
     }
 
     @Override
