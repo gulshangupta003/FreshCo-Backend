@@ -1,6 +1,7 @@
 package com.freshco.controller;
 
 import com.freshco.dto.request.ShopRequestDto;
+import com.freshco.dto.response.OrderCountResponseDto;
 import com.freshco.dto.response.OrderResponseDto;
 import com.freshco.dto.response.ProductResponseDto;
 import com.freshco.dto.response.ShopResponseDto;
@@ -99,6 +100,16 @@ public class ShopController {
     @PreAuthorize("hasRole('SELLER')")
     public ResponseEntity<ShopResponseDto> getMyShop(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         ShopResponseDto response = shopService.getMyShop(customUserDetails.getUser().getId());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/me/orders/count")
+    @PreAuthorize("hasRole('SELLER')")
+    public ResponseEntity<OrderCountResponseDto> getShopOrderCount(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        OrderCountResponseDto response = orderService.getShopOrderCount(customUserDetails.getUser().getId());
 
         return ResponseEntity.ok(response);
     }
