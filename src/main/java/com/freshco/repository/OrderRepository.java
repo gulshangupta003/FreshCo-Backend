@@ -2,13 +2,15 @@ package com.freshco.repository;
 
 import com.freshco.entity.Order;
 import com.freshco.entity.OrderStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
 
-    List<Order> findByCustomerIdOrderByCreatedAtDesc(Long customerId);
+    Page<Order> findByCustomerIdOrderByCreatedAtDesc(Long customerId, Pageable pageable);
 
     List<Order> findByShopIdOrderByCreatedAtDesc(Long shopId);
 
