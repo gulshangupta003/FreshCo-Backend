@@ -16,7 +16,7 @@ public interface OrderService {
 
     PagedResponseDto<OrderResponseDto> getMyOrders(Long userId, int page, int size);
 
-    List<OrderResponseDto> getShopOrders(Long shopId, Long sellerId);
+    PagedResponseDto<OrderResponseDto> getShopOrders(Long shopId, Long sellerId, int page, int size);
 
     OrderResponseDto updateOrderStatus(Long orderId, String status, Long sellerId);
 
