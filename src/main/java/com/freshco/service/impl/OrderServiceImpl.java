@@ -125,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<OrderResponseDto> getMyOrders(Long userId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page, size);
 
         Page<Order> orderPage = orderRepository.findByCustomerIdOrderByCreatedAtDesc(userId, pageable);
 
