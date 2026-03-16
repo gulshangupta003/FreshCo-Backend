@@ -88,11 +88,15 @@ public class ShopController {
 
     @GetMapping("{shopId}/orders")
     @PreAuthorize("hasRole('SELLER')")
-    public ResponseEntity<List<OrderResponseDto>> getShopOrders(
+    public ResponseEntity<PagedResponseDto<OrderResponseDto>> getShopOrders(
             @PathVariable Long shopId,
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
     ) {
-        List<OrderResponseDto> response = orderService.getShopOrders(shopId, customUserDetails.getUser().getId());
+        PagedResponseDto<OrderResponseDto> response = orderService.getShopOrders(
+                shopId, customUserDetails.getUser().getId(), page, size
+        );
 
         return ResponseEntity.ok(response);
     }

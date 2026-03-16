@@ -145,7 +145,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrderResponseDto> getShopOrders(Long shopId, Long sellerId) {
+    public PagedResponseDto<OrderResponseDto> getShopOrders(Long shopId, Long sellerId, int page, int size) {
         Shop shop = shopRepository.findById(shopId)
                 .orElseThrow(() -> new ResourceNotFoundException("Shop", "id", shopId));
 
@@ -153,9 +153,22 @@ public class OrderServiceImpl implements OrderService {
             throw new AccessDeniedException("You can only view orders for your own shop");
         }
 
-        return orderRepository.findByShopIdOrderByCreatedAtDesc(shopId).stream()
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<Order> orderPage = orderRepository.findByShopIdOrderByCreatedAtDesc(shopId, pageable);
+
+        List<OrderResponseDto> content = orderPage.getContent().stream()
                 .map(this::mapToOrderResponseDto)
                 .toList();
+
+        return PagedResponseDto.<OrderResponseDto>builder()
+                .content(content)
+                .page(orderPage.getNumber())
+                .size(orderPage.getSize())
+                .totalElements(orderPage.getTotalElements())
+                .totalPages(orderPage.getTotalPages())
+                .last(orderPage.isLast())
+                .build();
     }
 
     @Override
