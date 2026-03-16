@@ -20,14 +20,16 @@ public class Shop {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, length = 100)
     private String name;
 
-    @Column(name = "address_line")
+    @Column(name = "address_line", nullable = false, length = 255)
     private String addressLine;
 
+    @Column(nullable = false, length = 50)
     private String city;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", length = 500)
     private String imageUrl;
 
     @CreationTimestamp

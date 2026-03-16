@@ -21,9 +21,10 @@ public class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 100)
     private String name;
 
+    @Column(length = 500)
     private String description;
 
     @Column(nullable = false, precision = 10, scale = 2)
@@ -33,9 +34,10 @@ public class Product {
     private Integer quantity;
 
     // "kg", "dozen", "piece", "bunch"
+    @Column(nullable = false, length = 20)
     private String unit;
 
-    @Column(name = "image_url")
+    @Column(name = "image_url", length = 500)
     private String imageUrl;
 
     @Builder.Default
@@ -55,7 +57,7 @@ public class Product {
     private Shop shop;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
 }
