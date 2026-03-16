@@ -2,6 +2,7 @@ package com.freshco.controller;
 
 import com.freshco.dto.request.CategoryRequestDto;
 import com.freshco.dto.response.CategoryResponseDto;
+import com.freshco.dto.response.PagedResponseDto;
 import com.freshco.dto.response.ProductResponseDto;
 import com.freshco.service.CategoryService;
 import com.freshco.service.ProductService;
@@ -61,8 +62,12 @@ public class CategoryController {
     }
 
     @GetMapping("/{id}/products")
-    public ResponseEntity<List<ProductResponseDto>> getProductsByCategoryId(@PathVariable Long id) {
-        List<ProductResponseDto> response = productService.getProductsByCategoryId(id);
+    public ResponseEntity<PagedResponseDto<ProductResponseDto>> getProductsByCategoryId(
+            @PathVariable Long id,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        PagedResponseDto<ProductResponseDto> response = productService.getProductsByCategoryId(id, page, size);
 
         return ResponseEntity.ok(response);
     }
