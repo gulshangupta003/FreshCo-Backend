@@ -147,10 +147,23 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductResponseDto> getProductsByCategoryId(Long categoryId) {
-        return productRepository.findByCategoryId(categoryId).stream()
+    public PagedResponseDto<ProductResponseDto> getProductsByCategoryId(Long categoryId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<Product> productPage = productRepository.findByCategoryId(categoryId, pageable);
+
+        List<ProductResponseDto> content = productPage.getContent().stream()
                 .map(this::mapToProductResponseDto)
                 .toList();
+
+        return PagedResponseDto.<ProductResponseDto>builder()
+                .content(content)
+                .page(productPage.getNumber())
+                .size(productPage.getSize())
+                .totalElements(productPage.getTotalElements())
+                .totalPages(productPage.getTotalPages())
+                .last(productPage.isLast())
+                .build();
     }
 
     @Override

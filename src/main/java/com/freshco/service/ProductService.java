@@ -20,7 +20,7 @@ public interface ProductService {
 
     void deleteProduct(Long productId, Long sellerId);
 
-    List<ProductResponseDto> getProductsByCategoryId(Long categoryId);
+    PagedResponseDto<ProductResponseDto> getProductsByCategoryId(Long categoryId, int page, int size);
 
     PagedResponseDto<ProductResponseDto> searchProducts(String keyword, int page, int size);
 
