@@ -21,27 +21,28 @@ public class Address {
     private Long id;
 
     // "Home", "Work", "Other"
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String label;
 
-    @Column(name = "receiver_name", nullable = false)
+    @Column(name = "receiver_name", nullable = false, length = 100)
     private String receiverName;
 
-    @Column(name = "receiver_phone", nullable = false)
+    @Column(name = "receiver_phone", nullable = false, length = 15)
     private String receiverPhone;
 
-    @Column(name = "address_line", nullable = false)
+    @Column(name = "address_line", nullable = false, length = 255)
     private String addressLine;
 
+    @Column(length = 100)
     private String landmark;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String city;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String state;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 6)
     private String pincode;
 
     @Column(name = "is_default")
