@@ -3,6 +3,7 @@ package com.freshco.controller;
 import com.freshco.dto.request.PlaceOrderRequestDto;
 import com.freshco.dto.request.UpdateOrderStatusRequestDto;
 import com.freshco.dto.response.OrderResponseDto;
+import com.freshco.dto.response.PagedResponseDto;
 import com.freshco.security.CustomUserDetails;
 import com.freshco.service.OrderService;
 import jakarta.validation.Valid;
@@ -12,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -44,10 +43,13 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<OrderResponseDto>> getMyOrders(
+    public ResponseEntity<PagedResponseDto<OrderResponseDto>> getMyOrders(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
-        List<OrderResponseDto> response = orderService.getMyOrders(customUserDetails.getUser().getId());
+        PagedResponseDto<OrderResponseDto> response = orderService.getMyOrders(
+                customUserDetails.getUser().getId(), page, size);
 
         return ResponseEntity.ok(response);
     }

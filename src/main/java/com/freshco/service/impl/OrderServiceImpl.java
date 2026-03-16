@@ -4,12 +4,17 @@ import com.freshco.dto.request.PlaceOrderRequestDto;
 import com.freshco.dto.response.OrderCountResponseDto;
 import com.freshco.dto.response.OrderItemResponseDto;
 import com.freshco.dto.response.OrderResponseDto;
+import com.freshco.dto.response.PagedResponseDto;
 import com.freshco.entity.*;
 import com.freshco.exception.BadRequestException;
 import com.freshco.exception.ResourceNotFoundException;
 import com.freshco.repository.*;
 import com.freshco.service.OrderService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -119,10 +124,23 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<OrderResponseDto> getMyOrders(Long customerId) {
-        return orderRepository.findByCustomerIdOrderByCreatedAtDesc(customerId).stream()
+    public PagedResponseDto<OrderResponseDto> getMyOrders(Long userId, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        Page<Order> orderPage = orderRepository.findByCustomerIdOrderByCreatedAtDesc(userId, pageable);
+
+        List<OrderResponseDto> content = orderPage.getContent().stream()
                 .map(this::mapToOrderResponseDto)
                 .toList();
+
+        return PagedResponseDto.<OrderResponseDto>builder()
+                .content(content)
+                .page(orderPage.getNumber())
+                .size(orderPage.getSize())
+                .totalElements(orderPage.getTotalElements())
+                .totalPages(orderPage.getTotalPages())
+                .last(orderPage.isLast())
+                .build();
     }
 
     @Override
