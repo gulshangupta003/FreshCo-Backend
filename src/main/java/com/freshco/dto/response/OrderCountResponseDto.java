@@ -11,7 +11,7 @@ public class OrderCountResponseDto {
 
     private long totalOrders;
     private long pendingOrders;
-    private long conformedOrders;
+    private long confirmedOrders;
     private long processingOrders;
     private long outForDeliveryOrders;
     private long deliveredOrders;

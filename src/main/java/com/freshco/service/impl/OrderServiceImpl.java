@@ -235,7 +235,7 @@ public class OrderServiceImpl implements OrderService {
         return OrderCountResponseDto.builder()
                 .totalOrders(orderRepository.countByShopId(shopId))
                 .pendingOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.PENDING))
-                .conformedOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.CONFIRMED))
+                .confirmedOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.CONFIRMED))
                 .processingOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.PROCESSING))
                 .outForDeliveryOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.OUT_FOR_DELIVERY))
                 .deliveredOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.DELIVERED))

@@ -38,13 +38,6 @@ public class ShopController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @GetMapping("{id}")
-    public ResponseEntity<ShopResponseDto> getShopById(@PathVariable Long id) {
-        ShopResponseDto response = shopService.getShopById(id);
-
-        return ResponseEntity.ok(response);
-    }
-
     @GetMapping
     public ResponseEntity<List<ShopResponseDto>> getAllShops() {
         List<ShopResponseDto> response = shopService.getAllShops();
@@ -115,6 +108,13 @@ public class ShopController {
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
         OrderCountResponseDto response = orderService.getShopOrderCount(customUserDetails.getUser().getId());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("{id}")
+    public ResponseEntity<ShopResponseDto> getShopById(@PathVariable Long id) {
+        ShopResponseDto response = shopService.getShopById(id);
 
         return ResponseEntity.ok(response);
     }

@@ -12,7 +12,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PlaceOrderRequestDto {
 
-    @NotNull(message = "Address re required")
+    @NotNull(message = "Address is required")
     private Long addressId;
 
 }
