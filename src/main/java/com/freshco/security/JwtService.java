@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
-//import java.util.function.Function;
 
 @Service
 public class JwtService {
@@ -75,36 +74,5 @@ public class JwtService {
             throw new JwtAuthenticationException("JWT validation error", HttpStatus.BAD_REQUEST, e);
         }
     }
-
-    public void validateToken(String token, String username) {
-        String extractedUsername = extractValidUsername(token);
-        if (!username.equals(extractedUsername)) {
-            throw new JwtAuthenticationException("Username mismatch", HttpStatus.UNAUTHORIZED);
-        }
-    }
-
-    public Claims extractAllClaims(String token) {
-        return this.jwtParser
-                .parseSignedClaims(token)
-                .getPayload();
-    }
-
-//    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
-//        final Claims claims = extractAllClaims(token);
-//        return claimsResolver.apply(claims);
-//    }
-//
-//    public String extractUsername(String token) {
-//        return extractClaim(token, Claims::getSubject);
-//    }
-//
-//    public Date extractExpiration(String token) {
-//        return extractClaim(token, Claims::getExpiration);
-//    }
-//
-//    public boolean isTokenExpired(String token) {
-//        return extractExpiration(token)
-//                .before(new Date(System.currentTimeMillis()));
-//    }
 
 }

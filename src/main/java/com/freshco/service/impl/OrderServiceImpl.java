@@ -125,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public PagedResponseDto<OrderResponseDto> getMyOrders(Long userId, int page, int size) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page, size);
 
         Page<Order> orderPage = orderRepository.findByCustomerIdOrderByCreatedAtDesc(userId, pageable);
 
@@ -153,7 +153,7 @@ public class OrderServiceImpl implements OrderService {
             throw new AccessDeniedException("You can only view orders for your own shop");
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page, size);
 
         Page<Order> orderPage = orderRepository.findByShopIdOrderByCreatedAtDesc(shopId, pageable);
 
@@ -235,7 +235,7 @@ public class OrderServiceImpl implements OrderService {
         return OrderCountResponseDto.builder()
                 .totalOrders(orderRepository.countByShopId(shopId))
                 .pendingOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.PENDING))
-                .conformedOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.CONFIRMED))
+                .confirmedOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.CONFIRMED))
                 .processingOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.PROCESSING))
                 .outForDeliveryOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.OUT_FOR_DELIVERY))
                 .deliveredOrders(orderRepository.countByShopIdAndStatus(shopId, OrderStatus.DELIVERED))
