@@ -4,9 +4,9 @@ spring:
 
   # ---------- DATABASE ----------
   datasource:
-    url: jdbc:mysql://localhost:3306/freshco_db?createDatabaseIfNotExist=true&serverTimezone=UTC
-    username: root
-    password: root1234
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   # ---------- JPA ----------
   jpa:
@@ -17,16 +17,10 @@ spring:
       hibernate:
         format_sql: true
 
-  # ---------- JACKSON ----------
-  security:
-    user:
-      name: admin
-      password: admin
-
 app:
   jwt:
-    secret: 55ad4ecdcf21c3cf4e2eb7f2f80a52d6e24d068fec8198b25edeac32207e5e27
-    expiration-milliseconds: 86400000
+    secret: ${JWT_SECRET}
+    expiration-milliseconds: ${JWT_EXPIRATION}
 
 server:
-  port: 8080
+  port: ${SERVER_PORT}
