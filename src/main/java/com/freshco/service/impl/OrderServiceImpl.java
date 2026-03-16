@@ -153,7 +153,7 @@ public class OrderServiceImpl implements OrderService {
             throw new AccessDeniedException("You can only view orders for your own shop");
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt"));
+        Pageable pageable = PageRequest.of(page, size);
 
         Page<Order> orderPage = orderRepository.findByShopIdOrderByCreatedAtDesc(shopId, pageable);
 
