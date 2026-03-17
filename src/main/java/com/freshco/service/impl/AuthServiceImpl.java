@@ -11,12 +11,14 @@ import com.freshco.security.CustomUserDetails;
 import com.freshco.security.JwtService;
 import com.freshco.service.AuthService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -35,6 +37,7 @@ public class AuthServiceImpl implements AuthService {
             throw new BadRequestException("Admin registration is not allowed");
         }
 
+        log.info("Registering user with email: {}", request.getEmail());
         String email = request.getEmail().trim().toLowerCase();
         if (userRepository.existsByEmail(email)) {
             throw new BadRequestException("Email already exists: " + email);
@@ -50,6 +53,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         User savedUser = userRepository.save(user);
+        log.info("User registered successfully with email: {}", savedUser.getEmail());
 
         String jwtToken = jwtService.generateToken(email);
 
@@ -58,6 +62,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDto login(LoginRequestDto request) {
+        log.info("Login attempt for email: {}", request.getEmail());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail().trim().toLowerCase(),
@@ -70,6 +75,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         User user = customUserDetails.getUser();
+        log.info("Login successful with email: {}", user.getEmail());
 
         String jwtToken = jwtService.generateToken(user.getEmail());
 
