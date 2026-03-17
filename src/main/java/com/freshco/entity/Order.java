@@ -1,5 +1,8 @@
 package com.freshco.entity;
 
+import com.freshco.enums.OrderStatus;
+import com.freshco.enums.PaymentMethod;
+import com.freshco.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
