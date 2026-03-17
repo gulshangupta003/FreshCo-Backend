@@ -3,7 +3,7 @@ package com.freshco.service.impl;
 import com.freshco.dto.request.LoginRequestDto;
 import com.freshco.dto.request.RegisterRequestDto;
 import com.freshco.dto.response.UserDto;
-import com.freshco.entity.Role;
+import com.freshco.enums.Role;
 import com.freshco.entity.User;
 import com.freshco.exception.BadRequestException;
 import com.freshco.repository.UserRepository;

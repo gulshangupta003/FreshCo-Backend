@@ -1,7 +1,7 @@
 package com.freshco.controller;
 
 import com.freshco.dto.response.RoleDto;
-import com.freshco.entity.Role;
+import com.freshco.enums.Role;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;

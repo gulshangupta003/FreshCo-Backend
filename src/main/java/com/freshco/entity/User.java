@@ -1,5 +1,6 @@
 package com.freshco.entity;
 
+import com.freshco.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

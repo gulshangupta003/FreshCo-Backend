@@ -1,4 +1,4 @@
-package com.freshco.entity;
+package com.freshco.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;

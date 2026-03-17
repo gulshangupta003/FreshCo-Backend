@@ -1,6 +1,6 @@
 package com.freshco.dto.response;
 
-import com.freshco.entity.Role;
+import com.freshco.enums.Role;
 import lombok.*;
 
 @Getter
