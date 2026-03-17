@@ -6,6 +6,8 @@ import com.freshco.dto.response.OrderResponseDto;
 import com.freshco.dto.response.PagedResponseDto;
 import com.freshco.security.CustomUserDetails;
 import com.freshco.service.OrderService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,12 +19,14 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
+@Tag(name = "9. Order", description = "Order payment and management")
 public class OrderController {
 
     private final OrderService orderService;
 
     // ToDo: While checkout product should be active
     @PostMapping
+    @Operation(summary = "Place order", description = "Creates order from cart items with price locking")
     public ResponseEntity<OrderResponseDto> placeOrder(
             @Valid @RequestBody PlaceOrderRequestDto request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -33,6 +37,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Get order details", description = "Accessible by the customer who placed it or the shop owner")
     public ResponseEntity<OrderResponseDto> getOrderById(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -43,6 +48,7 @@ public class OrderController {
     }
 
     @GetMapping
+    @Operation(summary = "Get my orders", description = "Returns paginated orders for the logged-in customer")
     public ResponseEntity<PagedResponseDto<OrderResponseDto>> getMyOrders(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
@@ -56,6 +62,7 @@ public class OrderController {
 
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('SELLER')")
+    @Operation(summary = "Update order status", description = "Seller advances order through the status workflow")
     public ResponseEntity<OrderResponseDto> updateOrderStatus(
             @PathVariable Long id,
             @Valid @RequestBody UpdateOrderStatusRequestDto request,
@@ -68,6 +75,7 @@ public class OrderController {
     }
 
     @PatchMapping("/{id}/cancel")
+    @Operation(summary = "Cancel order", description = "Customer can cancel from PENDING status only")
     public ResponseEntity<OrderResponseDto> cancelOrder(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
