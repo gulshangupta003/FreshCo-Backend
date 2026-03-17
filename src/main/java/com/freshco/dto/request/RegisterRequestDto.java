@@ -1,6 +1,7 @@
 package com.freshco.dto.request;
 
 import com.freshco.entity.Role;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -9,6 +10,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Request payload for registering a new user")
 public class RegisterRequestDto {
 
     @NotBlank(message = "First name is required")

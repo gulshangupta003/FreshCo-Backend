@@ -24,3 +24,9 @@ app:
 
 server:
   port: ${SERVER_PORT}
+
+# ---------- SWAGGER ----------
+springdoc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter: alpha

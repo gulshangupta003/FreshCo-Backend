@@ -2,6 +2,8 @@ package com.freshco.controller;
 
 import com.freshco.dto.response.RoleDto;
 import com.freshco.entity.Role;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,9 +13,11 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/roles")
+@Tag(name = "2. Roles", description = "Available user roles")
 public class RoleController {
 
     @GetMapping
+    @Operation(summary = "Get all roles", description = "Returns all available roles")
     public ResponseEntity<List<RoleDto>> getRoles() {
         List<RoleDto> roles = Arrays.stream(Role.values())
                 .map(role -> new RoleDto(role.name(), role.getCode()))
