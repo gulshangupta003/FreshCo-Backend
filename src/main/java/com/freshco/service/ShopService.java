@@ -1,6 +1,7 @@
 package com.freshco.service;
 
 import com.freshco.dto.request.ShopRequestDto;
+import com.freshco.dto.response.PagedResponseDto;
 import com.freshco.dto.response.ShopResponseDto;
 
 import java.util.List;
@@ -18,5 +19,7 @@ public interface ShopService {
     void deleteShop(Long shopId, Long sellerId);
 
     ShopResponseDto getMyShop(Long sellerId);
+
+    PagedResponseDto<ShopResponseDto> getShopByPincode(String pincode, int page, int size);
 
 }

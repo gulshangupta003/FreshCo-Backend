@@ -25,9 +25,7 @@ import java.util.List;
 public class ShopController {
 
     private final ShopService shopService;
-
     private final ProductService productService;
-
     private final OrderService orderService;
 
     @PostMapping
@@ -121,6 +119,16 @@ public class ShopController {
         OrderCountResponseDto response = orderService.getShopOrderCount(customUserDetails.getUser().getId());
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/pincode/{pincode}")
+    @Operation(summary = "Get shop by pincode", description = "Returns paginated shops in a specific pincode area")
+    public ResponseEntity<PagedResponseDto<ShopResponseDto>> getShopByPincode(
+            @PathVariable String pincode,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(shopService.getShopByPincode(pincode, page, size));
     }
 
     @GetMapping("/{id}")
