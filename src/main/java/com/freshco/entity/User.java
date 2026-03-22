@@ -56,4 +56,11 @@ public class User {
     @OneToOne(mappedBy = "user")
     private Cart cart;
 
+    @Column(name = "failed_attempts", nullable = false)
+    @Builder.Default
+    private int failedAttempts = 0;
+
+    @Column(name = "locked_until")
+    private LocalDateTime lockedUntil;
+
 }
