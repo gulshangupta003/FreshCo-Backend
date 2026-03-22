@@ -10,6 +10,7 @@ import com.freshco.repository.UserRepository;
 import com.freshco.security.CustomUserDetails;
 import com.freshco.security.JwtService;
 import com.freshco.service.AuthService;
+import com.freshco.service.LoginAttemptService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -24,12 +25,10 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final JwtService jwtService;
-
     private final AuthenticationManager authenticationManager;
+    private final LoginAttemptService loginAttemptService;
 
     @Override
     public UserDto register(RegisterRequestDto request) {
@@ -62,24 +61,26 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDto login(LoginRequestDto request) {
-        log.info("Login attempt for email: {}", request.getEmail());
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail().trim().toLowerCase(),
-                        request.getPassword()
-                )
-        );
+        String email = request.getEmail().trim().toLowerCase();
+        log.info("Login attempt for email: {}", email);
 
-        if (!(authentication.getPrincipal() instanceof CustomUserDetails customUserDetails)) {
-            throw new BadRequestException("Authentication failed: Unexpected principal type");
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException("Invalid email or password"));
+
+        loginAttemptService.checkAccountLock(user);
+
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, request.getPassword()));
+        } catch (Exception e) {
+            loginAttemptService.handleFailedAttempt(user);
+            throw new BadRequestException("Invalid email or password");
         }
 
-        User user = customUserDetails.getUser();
-        log.info("Login successful with email: {}", user.getEmail());
+        loginAttemptService.resetFailedAttempts(user);
 
-        String jwtToken = jwtService.generateToken(user.getEmail());
+        log.info("Login successful for user id: {}", user.getId());
 
-        return mapToUserDto(user, jwtToken);
+        return mapToUserDto(user, jwtService.generateToken(user.getEmail()));
     }
 
     private UserDto mapToUserDto(User user, String token) {
