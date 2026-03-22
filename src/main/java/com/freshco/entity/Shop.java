@@ -29,6 +29,12 @@ public class Shop {
     @Column(nullable = false, length = 50)
     private String city;
 
+    @Column(nullable = false, length = 50)
+    private String state;
+
+    @Column(nullable = false, length = 6)
+    private String pincode;
+
     @Column(name = "image_url", length = 500)
     private String imageUrl;
 

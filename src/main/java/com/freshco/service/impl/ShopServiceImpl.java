@@ -1,6 +1,7 @@
 package com.freshco.service.impl;
 
 import com.freshco.dto.request.ShopRequestDto;
+import com.freshco.dto.response.PagedResponseDto;
 import com.freshco.dto.response.ShopResponseDto;
 import com.freshco.entity.Shop;
 import com.freshco.entity.User;
@@ -10,6 +11,10 @@ import com.freshco.repository.ShopRepository;
 import com.freshco.repository.UserRepository;
 import com.freshco.service.ShopService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,6 +43,8 @@ public class ShopServiceImpl implements ShopService {
                 .name(request.getName())
                 .addressLine(request.getAddressLine())
                 .city(request.getCity())
+                .state(request.getState())
+                .pincode(request.getPincode())
                 .imageUrl(request.getImageUrl())
                 .owner(seller)
                 .build();
@@ -75,6 +82,8 @@ public class ShopServiceImpl implements ShopService {
         shop.setName(request.getName().trim());
         shop.setAddressLine(request.getAddressLine());
         shop.setCity(request.getCity().trim());
+        shop.setState(request.getState().trim());
+        shop.setPincode(request.getPincode());
         shop.setImageUrl(request.getImageUrl());
 
         Shop updatedShop = shopRepository.save(shop);
@@ -103,6 +112,27 @@ public class ShopServiceImpl implements ShopService {
         return mapToShopResponseDto(shop);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public PagedResponseDto<ShopResponseDto> getShopByPincode(String pincode, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("name").ascending());
+
+        Page<Shop> shopPage = shopRepository.findByPincode(pincode, pageable);
+
+        List<ShopResponseDto> content = shopPage.stream()
+                .map(this::mapToShopResponseDto)
+                .toList();
+
+        return PagedResponseDto.<ShopResponseDto>builder()
+                .content(content)
+                .page(shopPage.getNumber())
+                .size(shopPage.getSize())
+                .totalElements(shopPage.getTotalElements())
+                .totalPages(shopPage.getTotalPages())
+                .last(shopPage.isLast())
+                .build();
+    }
+
     private Shop findShopById(Long shopId) {
         return shopRepository.findById(shopId)
                 .orElseThrow(() -> new ResourceNotFoundException("Shop", "id", shopId));
@@ -114,6 +144,8 @@ public class ShopServiceImpl implements ShopService {
                 .name(shop.getName())
                 .addressLine(shop.getAddressLine())
                 .city(shop.getCity())
+                .state(shop.getState())
+                .pincode(shop.getPincode())
                 .imageUrl(shop.getImageUrl())
                 .createdAt(shop.getCreatedAt())
                 .ownerId(shop.getOwner().getId())
