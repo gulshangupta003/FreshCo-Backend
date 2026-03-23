@@ -7,15 +7,21 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Java-21_LTS-ED8B00?style=flat&logo=openjdk&logoColor=white" />
-  <img src="https://img.shields.io/badge/Spring_Boot-4.0.2-6DB33F?style=flat&logo=springboot&logoColor=white" />
-  <img src="https://img.shields.io/badge/Spring_Security-7.x-6DB33F?style=flat&logo=springsecurity&logoColor=white" />
-  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white" />
-  <img src="https://img.shields.io/badge/Hibernate-7.x-59666C?style=flat&logo=hibernate&logoColor=white" />
-  <img src="https://img.shields.io/badge/JWT-0.13-000000?style=flat&logo=jsonwebtokens&logoColor=white" />
-  <img src="https://img.shields.io/badge/Swagger-OpenAPI_3.1-85EA2D?style=flat&logo=swagger&logoColor=black" />
-  <img src="https://img.shields.io/badge/Maven-3.9-C71A36?style=flat&logo=apachemaven&logoColor=white" />
-  <img src="https://img.shields.io/badge/License-Apache_2.0-D22128?style=flat&logo=apache&logoColor=white" />
+  <img src="https://img.shields.io/badge/Java-21_LTS-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white" />
+  <img src="https://img.shields.io/badge/Spring_Boot-4.0.2-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" />
+  <img src="https://img.shields.io/badge/Spring_Security-7.x-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white" />
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Hibernate-7.x-59666C?style=for-the-badge&logo=hibernate&logoColor=white" />
+  <img src="https://img.shields.io/badge/JWT-0.13-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white" />
+  <img src="https://img.shields.io/badge/Swagger-OpenAPI_3.1-85EA2D?style=for-the-badge&logo=swagger&logoColor=black" />
+  <img src="https://img.shields.io/badge/Maven-3.9-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/License-Apache_2.0-D22128?style=for-the-badge&logo=apache&logoColor=white" />
 </p>
 
 <p align="center">
@@ -102,11 +108,11 @@ All exceptions (including Spring Security 401/403) are routed through `GlobalExc
 
 ```json
 {
-    "type": "https://api.freshco.com/errors/not-found",
-    "title": "Resource Not Found",
-    "status": 404,
-    "detail": "Product not found with id: 99",
-    "timestamp": "2026-03-23T10:00:00Z"
+   "type": "https://api.freshco.com/errors/not-found",
+   "title": "Resource Not Found",
+   "status": 404,
+   "detail": "Product not found with id: 99",
+   "timestamp": "2026-03-23T10:00:00Z"
 }
 ```
 
