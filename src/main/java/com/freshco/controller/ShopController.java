@@ -85,7 +85,7 @@ public class ShopController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("{shopId}/orders")
+    @GetMapping("/{shopId}/orders")
     @PreAuthorize("hasRole('SELLER')")
     @Operation(summary = "Get shop orders", description = "Returns paginated orders for the logged-in seller's shop")
     public ResponseEntity<PagedResponseDto<OrderResponseDto>> getShopOrders(

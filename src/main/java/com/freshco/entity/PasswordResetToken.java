@@ -7,7 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "password_reset_token")
+@Table(name = "password_reset_tokens")
 @Getter
 @Setter
 @NoArgsConstructor
