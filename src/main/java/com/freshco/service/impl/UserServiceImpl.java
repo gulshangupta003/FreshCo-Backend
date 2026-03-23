@@ -32,6 +32,7 @@ public class UserServiceImpl implements UserService {
                 .email(user.getEmail())
                 .mobileNumber(user.getMobileNumber())
                 .role(user.getRole().getCode())
+                .emailVerified(user.isEmailVerified())
                 .createdAt(user.getCreatedAt())
                 .build();
     }

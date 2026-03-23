@@ -63,4 +63,14 @@ public class User {
     @Column(name = "locked_until")
     private LocalDateTime lockedUntil;
 
+    @Column(name = "email_verified", nullable = false)
+    @Builder.Default
+    private boolean emailVerified = false;
+
+    @Column(length = 6)
+    private String otp;
+
+    @Column(name = "otp_expires_at")
+    private LocalDateTime otpExpiresAt;
+
 }
