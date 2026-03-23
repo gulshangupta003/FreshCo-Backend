@@ -1,6 +1,6 @@
 package com.freshco.service.impl;
 
-import com.freshco.dto.UserProfileDto;
+import com.freshco.dto.response.UserProfileDto;
 import com.freshco.entity.User;
 import com.freshco.exception.ResourceNotFoundException;
 import com.freshco.repository.UserRepository;
@@ -32,6 +32,7 @@ public class UserServiceImpl implements UserService {
                 .email(user.getEmail())
                 .mobileNumber(user.getMobileNumber())
                 .role(user.getRole().getCode())
+                .emailVerified(user.isEmailVerified())
                 .createdAt(user.getCreatedAt())
                 .build();
     }

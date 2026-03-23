@@ -30,14 +30,14 @@ public class AddressServiceImpl implements AddressService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
-        long AddressCount = addressRepository.countByUserId(userId);
-        if (AddressCount >= 5) {
+        long addressCount = addressRepository.countByUserId(userId);
+        if (addressCount >= 5) {
             throw new BadRequestException(
                     "You can have a maximum of 5 addresses. Delete an existing address to add new one"
             );
         }
 
-        boolean isFirst = AddressCount == 0;
+        boolean isFirst = addressCount == 0;
 
         Address address = Address.builder()
                 .label(request.getLabel().trim())

@@ -1,6 +1,6 @@
 package com.freshco.service;
 
-import com.freshco.dto.UserProfileDto;
+import com.freshco.dto.response.UserProfileDto;
 
 public interface UserService {
 

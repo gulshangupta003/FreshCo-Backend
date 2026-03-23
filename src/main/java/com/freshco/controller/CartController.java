@@ -5,6 +5,8 @@ import com.freshco.dto.request.UpdateCartItemQuantityRequestDto;
 import com.freshco.dto.response.CartResponseDto;
 import com.freshco.security.CustomUserDetails;
 import com.freshco.service.CartService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,11 +17,13 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/cart")
 @RequiredArgsConstructor
+@Tag(name = "8. Cart", description = "Shopping cart operations")
 public class CartController {
 
     private final CartService cartService;
 
     @PostMapping("/items")
+    @Operation(summary = "Add item to cart", description = "Adds a product to cart. Enforces single-shop rule.")
     public ResponseEntity<CartResponseDto> addToCart(
             @Valid @RequestBody AddToCartRequestDto request,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -30,6 +34,7 @@ public class CartController {
     }
 
     @GetMapping
+    @Operation(summary = "View cart")
     public ResponseEntity<CartResponseDto> getCart(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         CartResponseDto response = cartService.getCart(customUserDetails.getUser().getId());
 
@@ -37,6 +42,7 @@ public class CartController {
     }
 
     @PatchMapping("/items/{id}")
+    @Operation(summary = "Update item quantity")
     public ResponseEntity<CartResponseDto> updateCartItemQuantity(
             @PathVariable Long id,
             @Valid @RequestBody UpdateCartItemQuantityRequestDto request,
@@ -48,6 +54,7 @@ public class CartController {
     }
 
     @DeleteMapping("/items/{id}")
+    @Operation(summary = "Remove item from cart")
     public ResponseEntity<CartResponseDto> removeCartItem(
             @PathVariable Long id,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -58,6 +65,7 @@ public class CartController {
     }
 
     @DeleteMapping
+    @Operation(summary = "Clear cart", description = "Removes all items and resets shop association")
     public ResponseEntity<CartResponseDto> clearCart(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         CartResponseDto response = cartService.clearCart(customUserDetails.getUser().getId());
 

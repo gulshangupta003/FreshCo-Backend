@@ -1,6 +1,7 @@
 package com.freshco.dto.request;
 
-import com.freshco.entity.Role;
+import com.freshco.enums.Role;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -9,6 +10,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "Request payload for registering a new user")
 public class RegisterRequestDto {
 
     @NotBlank(message = "First name is required")
@@ -22,7 +24,11 @@ public class RegisterRequestDto {
     private String email;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6, message = "Password must be at-least 6 characters long")
+    @Size(min = 8, max = 50)
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&#])[A-Za-z\\d@$!%*?&#]{8,}$",
+            message = "Password must contain at least one uppercase, one lowercase, one digit, and one special character (@$!%*?&#)"
+    )
     private String password;
 
     @Pattern(regexp = "^[6-9][0-9]{9}$", message = "Invalid mobile number")

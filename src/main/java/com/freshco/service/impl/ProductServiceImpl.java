@@ -114,7 +114,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = findProductById(productId);
 
         if (!product.getShop().getOwner().getId().equals(sellerId)) {
-            throw new AccessDeniedException("You can only update products in our own shop");
+            throw new AccessDeniedException("You can only update products in your own shop");
         }
 
         Category category = categoryRepository.findById(request.getCategoryId())

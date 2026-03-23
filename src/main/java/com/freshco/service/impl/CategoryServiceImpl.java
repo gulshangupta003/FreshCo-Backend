@@ -61,7 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "id", id));
 
-        String newName = request.getName().toLowerCase().trim();
+        String newName = request.getName().trim();
         if (!category.getName().equalsIgnoreCase(newName) && categoryRepository.existsByNameIgnoreCase(newName)) {
             throw new DuplicateResourceException("Category already exists with name: " + newName);
         }
@@ -71,7 +71,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category savedCategory = categoryRepository.save(category);
 
-        return mapToCategoryResponseDto(category);
+        return mapToCategoryResponseDto(savedCategory);
     }
 
     @Override

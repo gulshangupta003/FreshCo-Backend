@@ -30,7 +30,7 @@ public class ProductRequestDto {
     @Min(value = 0, message = "Quantity cannot be negative")
     private Integer quantity;
 
-    @NotNull(message = "Unit is required")
+    @NotBlank(message = "Unit is required")
     private String unit;
 
     private String imageUrl;
