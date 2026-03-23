@@ -1,6 +1,7 @@
 package com.freshco.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -17,7 +18,12 @@ public class ResetPasswordRequestDto {
     private String token;
 
     @NotBlank(message = "Password is required")
-    @Size(min = 6)
+    @Size(min = 8, max = 50)
+    @Pattern(
+            regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\\\d)(?=.*[@$!%*?&#])[A-Za-z\\\\d@$!%*?&#]{8,}$",
+            message = "Password must contain at least one uppercase, one lowercase, one digit, " +
+                    "and one special character (@$!%*?&#)"
+    )
     private String newPassword;
 
 }
