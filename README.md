@@ -1,290 +1,262 @@
-# 🍃 FreshCo Backend
+<p align="center">
+  <img src="https://img.shields.io/badge/%F0%9F%8D%83_FreshCo-E--commerce_Backend-00C853?style=for-the-badge&labelColor=1B5E20" alt="FreshCo" />
+</p>
 
-[![Java](https://img.shields.io/badge/Java-21-007396?logo=openjdk&logoColor=white)](https://openjdk.org/)
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-4.0.2-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
-[![Maven](https://img.shields.io/badge/Maven-3.9-C71A36?logo=apache-maven&logoColor=white)](https://maven.apache.org/)
-[![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![JWT](https://img.shields.io/badge/JWT-Auth-000000?logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue)](LICENSE)
+<p align="center">
+  <em>A production-grade e-commerce REST API connecting local vegetable & fruit shopkeepers with nearby customers</em>
+</p>
 
-**FreshCo** is a full-stack e-commerce platform connecting local vegetable and fruit shopkeepers with nearby customers. This repository contains the **backend REST API** built with Spring Boot, featuring JWT authentication, role-based access control, cart management, order processing, and comprehensive error handling.
+<p align="center">
+  <img src="https://img.shields.io/badge/Java-21_LTS-ED8B00?style=flat&logo=openjdk&logoColor=white" />
+  <img src="https://img.shields.io/badge/Spring_Boot-4.0.2-6DB33F?style=flat&logo=springboot&logoColor=white" />
+  <img src="https://img.shields.io/badge/Spring_Security-7.x-6DB33F?style=flat&logo=springsecurity&logoColor=white" />
+  <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=flat&logo=mysql&logoColor=white" />
+  <img src="https://img.shields.io/badge/Hibernate-7.x-59666C?style=flat&logo=hibernate&logoColor=white" />
+  <img src="https://img.shields.io/badge/JWT-0.13-000000?style=flat&logo=jsonwebtokens&logoColor=white" />
+  <img src="https://img.shields.io/badge/Swagger-OpenAPI_3.1-85EA2D?style=flat&logo=swagger&logoColor=black" />
+  <img src="https://img.shields.io/badge/Maven-3.9-C71A36?style=flat&logo=apachemaven&logoColor=white" />
+  <img src="https://img.shields.io/badge/License-Apache_2.0-D22128?style=flat&logo=apache&logoColor=white" />
+</p>
 
----
-
-## 📋 Table of Contents
-
-- [Features](#-features)
-- [Tech Stack](#-tech-stack)
-- [Architecture](#-architecture)
-- [Database Design](#-database-design)
-- [API Reference](#-api-reference)
-- [Getting Started](#-getting-started)
-- [Environment Variables](#-environment-variables)
-- [Project Structure](#-project-structure)
-- [Key Design Decisions](#-key-design-decisions)
-- [Error Handling](#-error-handling)
-
----
-
-## ✨ Features
-
-### Authentication & Authorization
-- JWT-based stateless authentication
-- Role-based access control (ADMIN, SELLER, CUSTOMER)
-- Custom `@PreAuthorize` method-level security
-- Centralized error handling with `HandlerExceptionResolver` delegation pattern
-
-### Seller Features
-- Create and manage a single shop per seller
-- Add, update, delete, and toggle product availability
-- View and manage incoming orders with status workflow
-- Dashboard with order count statistics by status
-
-### Customer Features
-- Browse shops and products with pagination
-- Search products by name (case-insensitive, partial match)
-- Filter products by category
-- Persistent shopping cart with single-shop enforcement
-- Multiple delivery addresses (max 5) with default address management
-- Place orders with Cash on Delivery
-- Cancel pending orders with automatic stock restoration
-
-### Order Management
-- Complete order lifecycle: `PENDING → CONFIRMED → PROCESSING → OUT_FOR_DELIVERY → DELIVERED`
-- Validated status transitions (no skipping steps, no going backward)
-- Cancellation allowed from PENDING (customer) or PENDING/CONFIRMED (seller)
-- Automatic stock reduction on order placement
-- Automatic stock restoration on cancellation
-- Price locking at time of order (immune to future price changes)
+<p align="center">
+  <a href="#-highlights">Highlights</a> •
+  <a href="#-architecture">Architecture</a> •
+  <a href="#-api-reference-45-endpoints">API Reference</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-design-decisions">Design Decisions</a>
+</p>
 
 ---
 
-## 🛠 Tech Stack
+## 🎯 Highlights
 
-| Technology | Purpose |
-|---|---|
-| **Java 21** | Programming language |
-| **Spring Boot 4.0.2** | Application framework |
-| **Spring Security** | Authentication & authorization |
-| **Spring Data JPA** | Database access & ORM |
-| **Hibernate 7** | JPA implementation |
-| **MySQL 8** | Relational database |
-| **JWT (jjwt 0.13)** | Token-based authentication |
-| **Lombok** | Boilerplate reduction |
-| **Jakarta Validation** | Input validation |
-| **Maven** | Build & dependency management |
+<table>
+<tr>
+<td width="50%">
+
+**🔐 Security**
+- JWT stateless auth with Spring Security
+- Email verification via 6-digit OTP
+- Password reset with expiring tokens
+- Account lockout after failed attempts
+- Strong password policy enforcement
+- RFC 7807 ProblemDetail error format
+
+</td>
+<td width="50%">
+
+**🛒 E-commerce**
+- Location-based shop discovery (pincode)
+- Single-shop cart enforcement
+- Price locking at order time
+- Validated order status workflow
+- Auto stock management
+- Max 5 addresses with smart defaults
+
+</td>
+</tr>
+</table>
+
+**45 API endpoints** · **10 database tables** · **9 modules** · **3 roles** (Admin, Seller, Customer)
 
 ---
 
 ## 🏗 Architecture
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                    Client (Postman / Frontend)       │
-└──────────────────────────┬──────────────────────────┘
-                           │ HTTP Request
-                           ▼
-┌─────────────────────────────────────────────────────┐
-│                 JwtAuthenticationFilter              │
-│            (extracts & validates JWT token)          │
-└──────────────────────────┬──────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────┐
-│                    Controller Layer                  │
-│         (request mapping, validation, auth)         │
-└──────────────────────────┬──────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────┐
-│                    Service Layer                     │
-│          (business logic, ownership checks)          │
-└──────────────────────────┬──────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────┐
-│                   Repository Layer                   │
-│            (Spring Data JPA, database access)        │
-└──────────────────────────┬──────────────────────────┘
-                           │
-                           ▼
-┌─────────────────────────────────────────────────────┐
-│                      MySQL Database                  │
-│                  (9 tables, InnoDB)                  │
-└─────────────────────────────────────────────────────┘
+                         ┌─────────────────────┐
+                         │   Client / Postman   │
+                         └──────────┬──────────┘
+                                    │ HTTP
+                         ┌──────────▼──────────┐
+                         │  JWT Auth Filter     │
+                         │  (validate token)    │
+                         └──────────┬──────────┘
+                                    │
+                         ┌──────────▼──────────┐
+                         │  Controller Layer    │
+                         │  @PreAuthorize       │
+                         │  @Valid + DTOs       │
+                         └──────────┬──────────┘
+                                    │
+                         ┌──────────▼──────────┐
+                         │  Service Layer       │
+                         │  Business logic      │
+                         │  Ownership checks    │
+                         │  @Transactional      │
+                         └──────────┬──────────┘
+                                    │
+                         ┌──────────▼──────────┐
+                         │  Repository Layer    │
+                         │  Spring Data JPA     │
+                         └──────────┬──────────┘
+                                    │
+                         ┌──────────▼──────────┐
+                         │  MySQL 8 (10 tables) │
+                         └─────────────────────┘
 ```
 
-### Error Handling Architecture
+### Error Handling — Single Source of Truth
 
-All exceptions — including security-level exceptions — are handled in a single `GlobalExceptionHandler` using the **HandlerExceptionResolver delegation pattern**:
+All exceptions (including Spring Security 401/403) are routed through `GlobalExceptionHandler` using the **HandlerExceptionResolver delegation pattern**. Every error response follows **RFC 7807 ProblemDetail**.
 
+```json
+{
+    "type": "https://api.freshco.com/errors/not-found",
+    "title": "Resource Not Found",
+    "status": 404,
+    "detail": "Product not found with id: 99",
+    "timestamp": "2026-03-23T10:00:00Z"
+}
 ```
-Security Filters                         GlobalExceptionHandler
-┌──────────────────────────┐            ┌──────────────────────────┐
-│ AuthenticationEntryPoint │─── 401 ──▶│ AuthenticationException  │
-│ AccessDeniedHandler      │─── 403 ──▶│ AccessDeniedException    │
-└──────────────────────────┘            │ MethodArgumentNotValid   │
-                                        │ BadRequestException      │
-Controllers ─── errors ───────────────▶│ ResourceNotFoundException│
-                                        │ DuplicateResourceException│
-                                        │ Exception (catch-all)    │
-                                        └──────────────────────────┘
-```
-
-All error responses follow the **RFC 7807 ProblemDetail** standard.
 
 ---
 
-## 🗃 Database Design
-
-### ER Diagram
+## 🗄 Database Schema
 
 ```
-users ──── 1:1 ──── shops ──── 1:M ──── products ──── M:1 ──── categories
-  │                   │                     │
-  │ 1:1               │ 1:M                │ M:1
-  │                   │                     │
- carts ── 1:M ── cart_items               │
-  │                                        │
-  │ 1:M                                    │
-  │                                        │
-orders ── 1:M ── order_items ─── M:1 ─────┘
+users ─────── 1:1 ─── shops ───── 1:N ─── products ──── N:1 ─── categories
+  │                     │                      │
+  │ 1:1                 │ 1:N                  │
+  │                     │                      │
+ carts ── 1:N ── cart_items                    │
+  │                                            │
+  │ 1:N                                        │
+  │                                            │
+orders ── 1:N ── order_items ──── N:1 ─────────┘
   │
-  │ M:1
+  │ N:1
   │
-addresses
+addresses            password_reset_tokens ── N:1 ── users
 ```
 
-### Tables (9)
-
-| Table | Description | Key Relationships |
-|---|---|---|
-| `users` | All users (customers, sellers) | Has one shop, one cart, many addresses, many orders |
-| `shops` | Seller storefronts | Belongs to one user, has many products and orders |
-| `categories` | Product categories | Has many products |
-| `products` | Items sold by shops | Belongs to one shop and one category |
-| `addresses` | Delivery addresses | Belongs to one user |
-| `carts` | Shopping carts | Belongs to one user, references one shop |
-| `cart_items` | Products in cart | Belongs to one cart, references one product |
-| `orders` | Customer orders | Belongs to one customer, shop, and address |
-| `order_items` | Products in order | Belongs to one order, references one product |
+All VARCHAR columns use **explicit lengths** (not default 255) — e.g. `pincode=6`, `phone=15`, `email=100`, `bcrypt=72`.
 
 ---
 
-## 📡 API Reference
+## 📡 API Reference (45 endpoints)
 
-### Authentication (Public)
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/auth/register` | Register new user (SELLER or CUSTOMER) |
-| `POST` | `/api/auth/login` | Login and receive JWT token |
-| `GET` | `/api/roles` | Get all available roles |
-
-### User
-
-| Method | Endpoint | Access | Description |
-|---|---|---|---|
-| `GET` | `/api/users/me` | Any authenticated | Get logged-in user's profile |
-
-### Shop
-
-| Method | Endpoint | Access | Description |
-|---|---|---|---|
-| `POST` | `/api/shops` | SELLER | Create shop |
-| `GET` | `/api/shops/me` | SELLER | Get my shop |
-| `GET` | `/api/shops/me/orders/count` | SELLER | Dashboard order counts |
-| `GET` | `/api/shops` | Any authenticated | List all shops |
-| `GET` | `/api/shops/{id}` | Any authenticated | Get shop by ID |
-| `PUT` | `/api/shops/{id}` | Shop owner | Update shop |
-| `DELETE` | `/api/shops/{id}` | Shop owner | Delete shop |
-| `GET` | `/api/shops/{shopId}/products` | Any authenticated | Shop's products (paginated) |
-| `GET` | `/api/shops/{shopId}/orders` | Shop owner | Shop's orders (paginated) |
-
-### Category (Public)
+### 1. Auth — 6 endpoints
 
 | Method | Endpoint | Description |
-|---|---|---|
+|:------:|----------|-------------|
+| `POST` | `/api/auth/register` | Register + sends verification OTP |
+| `POST` | `/api/auth/login` | Login (requires verified email) |
+| `POST` | `/api/auth/verify-email` | Verify email with 6-digit OTP |
+| `POST` | `/api/auth/resend-otp` | Resend verification OTP |
+| `POST` | `/api/auth/forgot-password` | Send password reset token |
+| `POST` | `/api/auth/reset-password` | Reset password with token |
+
+### 2. Roles — 2 endpoints
+
+| Method | Endpoint | Description |
+|:------:|----------|-------------|
+| `GET` | `/api/roles` | All roles with codes |
+| `GET` | `/api/roles/map` | Roles as key-value map |
+
+### 3. User — 1 endpoint
+
+| Method | Endpoint | Access | Description |
+|:------:|----------|--------|-------------|
+| `GET` | `/api/users/me` | Auth | My profile |
+
+### 4. Shop — 10 endpoints
+
+| Method | Endpoint | Access | Description |
+|:------:|----------|--------|-------------|
+| `POST` | `/api/shops` | Seller | Create shop (one per seller) |
+| `GET` | `/api/shops/me` | Seller | My shop |
+| `GET` | `/api/shops/me/orders/count` | Seller | Dashboard order stats |
+| `GET` | `/api/shops` | Auth | All shops |
+| `GET` | `/api/shops/pincode/{pincode}` | Auth | Nearby shops (paginated) |
+| `GET` | `/api/shops/{id}` | Auth | Shop by ID |
+| `PUT` | `/api/shops/{id}` | Owner | Update shop |
+| `DELETE` | `/api/shops/{id}` | Owner | Delete shop |
+| `GET` | `/api/shops/{shopId}/products` | Auth | Shop products (paginated) |
+| `GET` | `/api/shops/{shopId}/orders` | Owner | Shop orders (paginated) |
+
+### 5. Category — 6 endpoints
+
+| Method | Endpoint | Description |
+|:------:|----------|-------------|
 | `POST` | `/api/categories` | Create category |
-| `GET` | `/api/categories` | List all categories |
-| `GET` | `/api/categories/{id}` | Get category by ID |
+| `GET` | `/api/categories` | All categories |
+| `GET` | `/api/categories/{id}` | Category by ID |
 | `PUT` | `/api/categories/{id}` | Update category |
-| `DELETE` | `/api/categories/{id}` | Delete category (idempotent) |
-| `GET` | `/api/categories/{id}/products` | Category's products (paginated) |
+| `DELETE` | `/api/categories/{id}` | Delete (idempotent) |
+| `GET` | `/api/categories/{id}/products` | Category products (paginated) |
 
-### Product
-
-| Method | Endpoint | Access | Description |
-|---|---|---|---|
-| `POST` | `/api/products` | SELLER | Create product |
-| `GET` | `/api/products/search?q=tom` | Any authenticated | Search by name (paginated) |
-| `GET` | `/api/products` | Any authenticated | List all products (paginated) |
-| `GET` | `/api/products/{id}` | Any authenticated | Get product by ID |
-| `PUT` | `/api/products/{id}` | Shop owner | Update product |
-| `PATCH` | `/api/products/{id}/active` | Shop owner | Toggle active/inactive |
-| `DELETE` | `/api/products/{id}` | Shop owner | Delete product |
-
-### Address
+### 6. Product — 7 endpoints
 
 | Method | Endpoint | Access | Description |
-|---|---|---|---|
-| `POST` | `/api/addresses` | Any authenticated | Add address (max 5) |
-| `GET` | `/api/addresses` | Any authenticated | Get my addresses |
-| `PUT` | `/api/addresses/{id}` | Address owner | Update address |
-| `DELETE` | `/api/addresses/{id}` | Address owner | Delete address (auto-promote default) |
-| `PATCH` | `/api/addresses/{id}/default` | Address owner | Set as default address |
+|:------:|----------|--------|-------------|
+| `POST` | `/api/products` | Seller | Create (shop auto-linked) |
+| `GET` | `/api/products/search?q=` | Auth | Search by name (paginated) |
+| `GET` | `/api/products` | Auth | All products (paginated) |
+| `GET` | `/api/products/{id}` | Auth | Product by ID |
+| `PUT` | `/api/products/{id}` | Owner | Update product |
+| `PATCH` | `/api/products/{id}/active` | Owner | Toggle active/inactive |
+| `DELETE` | `/api/products/{id}` | Owner | Delete product |
 
-### Cart
-
-| Method | Endpoint | Access | Description |
-|---|---|---|---|
-| `POST` | `/api/cart/items` | Any authenticated | Add product to cart |
-| `GET` | `/api/cart` | Any authenticated | View cart |
-| `PATCH` | `/api/cart/items/{id}` | Cart owner | Update item quantity |
-| `DELETE` | `/api/cart/items/{id}` | Cart owner | Remove item |
-| `DELETE` | `/api/cart` | Cart owner | Clear entire cart |
-
-### Order
+### 7. Address — 5 endpoints
 
 | Method | Endpoint | Access | Description |
-|---|---|---|---|
-| `POST` | `/api/orders` | Any authenticated | Place order from cart |
-| `GET` | `/api/orders` | Any authenticated | My orders (paginated) |
-| `GET` | `/api/orders/{id}` | Customer or shop owner | Get order details |
-| `PATCH` | `/api/orders/{id}/status` | SELLER (shop owner) | Update order status |
-| `PATCH` | `/api/orders/{id}/cancel` | Customer (order owner) | Cancel order (PENDING only) |
+|:------:|----------|--------|-------------|
+| `POST` | `/api/addresses` | Auth | Add (max 5, first = default) |
+| `GET` | `/api/addresses` | Auth | My addresses |
+| `PUT` | `/api/addresses/{id}` | Owner | Update address |
+| `DELETE` | `/api/addresses/{id}` | Owner | Delete (auto-promote default) |
+| `PATCH` | `/api/addresses/{id}/default` | Owner | Set default |
 
-**Total: 38 API endpoints**
+### 8. Cart — 5 endpoints
+
+| Method | Endpoint | Access | Description |
+|:------:|----------|--------|-------------|
+| `POST` | `/api/cart/items` | Auth | Add to cart (single-shop rule) |
+| `GET` | `/api/cart` | Auth | View cart |
+| `PATCH` | `/api/cart/items/{id}` | Owner | Update quantity |
+| `DELETE` | `/api/cart/items/{id}` | Owner | Remove item |
+| `DELETE` | `/api/cart` | Owner | Clear cart |
+
+### 9. Order — 5 endpoints
+
+| Method | Endpoint | Access | Description |
+|:------:|----------|--------|-------------|
+| `POST` | `/api/orders` | Auth | Place order (price lock + stock) |
+| `GET` | `/api/orders` | Auth | My orders (paginated) |
+| `GET` | `/api/orders/{id}` | Customer/Seller | Order details |
+| `PATCH` | `/api/orders/{id}/status` | Seller | Advance status |
+| `PATCH` | `/api/orders/{id}/cancel` | Customer | Cancel (PENDING only) |
+
+### Order Status Workflow
+
+```
+PENDING ──→ CONFIRMED ──→ PROCESSING ──→ OUT_FOR_DELIVERY ──→ DELIVERED
+   │             │                                                 │
+   │             │                                            PAID (COD)
+   ▼             ▼
+CANCELED     CANCELED
+(customer)   (seller)
+```
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- Java 21+
-- Maven 3.9+
-- MySQL 8.0+
+```
+Java 21+  •  Maven 3.9+  •  MySQL 8.0+  •  Gmail App Password
+```
 
-### Installation
-
-1. **Clone the repository**
+### Setup
 
 ```bash
 git clone https://github.com/gulshangupta003/FreshCo-Backend.git
 cd FreshCo-Backend
 ```
 
-2. **Set up MySQL**
-
-```sql
--- MySQL will auto-create the database via the connection URL
--- Just ensure MySQL is running on port 3306
-```
-
-3. **Configure environment variables**
-
-Create a `.env` file at the project root (or set via IntelliJ Run Configuration):
+Create `.env` at project root:
 
 ```properties
 DB_URL=jdbc:mysql://localhost:3306/freshco_db?createDatabaseIfNotExist=true&serverTimezone=UTC
@@ -292,32 +264,26 @@ DB_USERNAME=root
 DB_PASSWORD=your_password
 JWT_SECRET=your_256_bit_secret_key
 JWT_EXPIRATION=86400000
+MAIL_USERNAME=your_gmail@gmail.com
+MAIL_PASSWORD=your_16_char_app_password
+SERVER_PORT=8080
 ```
 
-4. **Run the application**
+> **Gmail App Password:** [Google Account](https://myaccount.google.com) → Security → 2-Step Verification → App Passwords
+
+### Run
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-5. **Import Postman collection**
+### Explore
 
-Import `FreshCo-Backend.postman_collection.json` from the repository root into Postman. Set `seller_token` and `customer_token` variables after registration.
-
----
-
-## 🔐 Environment Variables
-
-| Variable | Description | Default |
-|---|---|---|
-| `DB_URL` | MySQL connection URL | `jdbc:mysql://localhost:3306/freshco_db?...` |
-| `DB_USERNAME` | Database username | `root` |
-| `DB_PASSWORD` | Database password | `root1234` |
-| `JWT_SECRET` | JWT signing secret key | `default-secret-key-change-in-production` |
-| `JWT_EXPIRATION` | Token expiry in milliseconds | `86400000` (24 hours) |
-| `JPA_DDL_AUTO` | Hibernate DDL strategy | `update` |
-| `JPA_SHOW_SQL` | Log SQL queries | `true` |
-| `SERVER_PORT` | Application port | `8080` |
+| Tool | URL |
+|------|-----|
+| Swagger UI | http://localhost:8080/swagger-ui.html |
+| OpenAPI JSON | http://localhost:8080/v3/api-docs |
+| Postman | Import `FreshCo-Backend.postman_collection.json` |
 
 ---
 
@@ -325,154 +291,82 @@ Import `FreshCo-Backend.postman_collection.json` from the repository root into P
 
 ```
 src/main/java/com/freshco/
-├── config/
-│   └── SecurityConfig.java              # Security filter chain, CORS, session management
-├── controller/
-│   ├── AddressController.java           # Address CRUD endpoints
-│   ├── AuthController.java              # Register, Login
-│   ├── CartController.java              # Cart management endpoints
-│   ├── CategoryController.java          # Category CRUD + nested products
-│   ├── OrderController.java             # Order placement & management
-│   ├── ProductController.java           # Product CRUD + search + toggle
-│   ├── RoleController.java              # Role listing
-│   ├── ShopController.java              # Shop CRUD + nested resources
-│   └── UserController.java              # User profile
+├── config/            SecurityConfig, SwaggerConfig
+├── controller/        9 REST controllers
 ├── dto/
-│   ├── request/                         # Request DTOs with validation
-│   │   ├── AddToCartRequestDto.java
-│   │   ├── AddressRequestDto.java
-│   │   ├── CategoryRequestDto.java
-│   │   ├── LoginRequestDto.java
-│   │   ├── PlaceOrderRequestDto.java
-│   │   ├── ProductRequestDto.java
-│   │   ├── RegisterRequestDto.java
-│   │   ├── ShopRequestDto.java
-│   │   ├── UpdateCartItemQuantityRequestDto.java
-│   │   └── UpdateOrderStatusRequestDto.java
-│   └── response/                        # Response DTOs
-│       ├── AddressResponseDto.java
-│       ├── CartItemResponseDto.java
-│       ├── CartResponseDto.java
-│       ├── CategoryResponseDto.java
-│       ├── OrderCountResponseDto.java
-│       ├── OrderItemResponseDto.java
-│       ├── OrderResponseDto.java
-│       ├── PagedResponseDto.java
-│       ├── ProductResponseDto.java
-│       ├── RoleDto.java
-│       ├── ShopResponseDto.java
-│       └── UserDto.java
-├── entity/
-│   ├── Address.java
-│   ├── Cart.java
-│   ├── CartItem.java
-│   ├── Category.java
-│   ├── Order.java
-│   ├── OrderItem.java
-│   ├── OrderStatus.java
-│   ├── PaymentMethod.java
-│   ├── PaymentStatus.java
-│   ├── Product.java
-│   ├── Role.java
-│   ├── Shop.java
-│   └── User.java
-├── exception/
-│   ├── BadRequestException.java
-│   ├── DuplicateResourceException.java
-│   ├── GlobalExceptionHandler.java      # Centralized error handling (RFC 7807)
-│   ├── JwtAuthenticationException.java
-│   └── ResourceNotFoundException.java
-├── repository/
-│   ├── AddressRepository.java
-│   ├── CartItemRepository.java
-│   ├── CartRepository.java
-│   ├── CategoryRepository.java
-│   ├── OrderRepository.java
-│   ├── ProductRepository.java
-│   ├── ShopRepository.java
-│   └── UserRepository.java
-├── security/
-│   ├── CustomAccessDeniedHandler.java   # Delegates 403 to GlobalExceptionHandler
-│   ├── CustomAuthenticationEntryPoint.java # Delegates 401 to GlobalExceptionHandler
-│   ├── CustomUserDetails.java
-│   ├── JwtAuthenticationFilter.java
-│   ├── JwtService.java
-│   └── UserDetailsServiceImpl.java
-├── service/
-│   ├── impl/
-│   │   ├── AddressServiceImpl.java
-│   │   ├── AuthServiceImpl.java
-│   │   ├── CartServiceImpl.java
-│   │   ├── CategoryServiceImpl.java
-│   │   ├── OrderServiceImpl.java
-│   │   ├── ProductServiceImpl.java
-│   │   ├── ShopServiceImpl.java
-│   │   └── UserServiceImpl.java
-│   ├── AddressService.java
-│   ├── AuthService.java
-│   ├── CartService.java
-│   ├── CategoryService.java
-│   ├── OrderService.java
-│   ├── ProductService.java
-│   ├── ShopService.java
-│   └── UserService.java
-└── FreshcoBackendApplication.java
+│   ├── request/       13 request DTOs with validation
+│   └── response/      12 response DTOs
+├── entity/            10 JPA entities + 4 enums
+├── exception/         Custom exceptions + GlobalExceptionHandler (RFC 7807)
+├── repository/        10 Spring Data JPA repositories
+├── security/          JWT filter, UserDetails, EntryPoint, AccessDenied
+└── service/
+    ├── impl/          10 service implementations
+    └── *.java         Service interfaces
 ```
 
 ---
 
-## 💡 Key Design Decisions
+## 🔐 Security Features
 
-| Decision | Rationale |
-|---|---|
-| **One seller = One shop** | Matches local grocery domain. Simplifies product/order APIs. Extensible to one-to-many if needed. |
-| **Single-shop cart rule** | Prevents multi-shop delivery complexity. Cart stores `shop_id` for O(1) validation. |
-| **Backend cart (not frontend)** | Persists across sessions and devices. Demonstrates more backend skills for resume. |
-| **Lazy cart creation** | Cart created on first add, not at registration. Saves storage for users who never shop. |
-| **Cart kept on clear (not deleted)** | Reuses cart row. Avoids repeated INSERT/DELETE cycles. `shop_id` set to null on clear. |
-| **Non-idempotent delete for owned resources** | Shop, Product, Order return 404 on second delete. Owner should know the resource is gone. |
-| **Idempotent delete for shared resources** | Category always returns 204. No ownership — consistent behavior. |
-| **Pass user ID (not email) to services** | Primary key lookup is fastest. Services stay framework-agnostic. |
-| **HandlerExceptionResolver delegation** | Security handlers delegate to GlobalExceptionHandler. Single source of truth for all errors. |
-| **Price locking in OrderItem** | `unitPrice` saved at order time. Future price changes don't affect existing orders. |
-| **Explicit column lengths** | VARCHAR sizes match actual data (e.g., pincode=6, mobileNumber=15). Reduces storage and improves indexes. |
-| **Environment variable externalization** | Secrets use `${ENV_VAR:default}` pattern. Safe for GitHub, configurable in production. |
+| Feature | Implementation |
+|---------|----------------|
+| **Authentication** | JWT via `Authorization: Bearer <token>` |
+| **Password storage** | BCrypt (strength 12) |
+| **Password policy** | Min 8 chars: uppercase + lowercase + digit + special |
+| **Email verification** | 6-digit OTP via Gmail SMTP (10 min expiry) |
+| **Password reset** | UUID token via email (15 min expiry, one-time use) |
+| **Account lockout** | 5 failed attempts → 15 min lock (DB-persisted) |
+| **Role enforcement** | `@PreAuthorize` + service-layer ownership checks |
+| **Error masking** | Same message for wrong email vs wrong password |
 
 ---
 
-## 🚨 Error Handling
+## 💡 Design Decisions
 
-All errors follow **RFC 7807 ProblemDetail** format:
+| Decision | Why |
+|----------|-----|
+| **One seller = One shop** | Matches local grocery domain. Extensible to 1:N later. |
+| **Single-shop cart** | Cart stores `shop_id` — O(1) validation, no multi-shop delivery complexity. |
+| **Backend persistent cart** | Survives sessions/devices. Amazon/Flipkart pattern. |
+| **Lazy cart creation** | Created on first item add, not at registration. |
+| **Cart kept on clear** | Reuses row. `shop_id` nulled instead of DELETE+INSERT. |
+| **Price locking** | `unitPrice` in `order_items` — immune to future price changes. |
+| **Validated status transitions** | Enum ordinal comparison — no skipping, no backward. |
+| **HandlerExceptionResolver delegation** | Security 401/403 → same GlobalExceptionHandler → unified RFC 7807. |
+| **OTP in user row** | No separate table. Old OTP overwritten on resend. |
+| **DB-based login throttling** | Persists across app restarts. Can't bypass by restarting server. |
+| **Explicit column lengths** | `pincode=6`, `phone=15`, `email=100` — not default 255. |
+| **Idempotent DELETE (shared)** | Category → always 204. No owner = consistent behavior. |
+| **Non-idempotent DELETE (owned)** | Shop/Product → 404 on re-delete. Owner should know it's gone. |
+| **User ID passed to services** | PK lookup > email lookup. Services stay framework-agnostic. |
+| **Environment externalization** | `${ENV_VAR}` in YAML. No secrets in code or Git. |
 
-```json
-{
-    "type": "https://api.freshco.com/errors/not-found",
-    "title": "Not Found",
-    "status": 404,
-    "detail": "Product not found with id: 99",
-    "timestamp": "2026-03-10T12:00:00Z"
-}
-```
+---
 
-| Status | Type | When |
-|---|---|---|
-| `400` | Bad Request | Validation failure, business rule violation |
-| `401` | Unauthorized | Missing or invalid JWT token |
-| `403` | Forbidden | Insufficient role or not the resource owner |
-| `404` | Not Found | Resource doesn't exist |
-| `409` | Conflict | Duplicate resource (email, category name, etc.) |
-| `500` | Internal Server Error | Unexpected errors |
+## 🛠 Tech Stack
+
+| Layer | Technology | Version |
+|-------|-----------|---------|
+| Language | Java (LTS) | 21 |
+| Framework | Spring Boot | 4.0.2 |
+| Security | Spring Security + JWT (jjwt) | 7.x / 0.13 |
+| ORM | Spring Data JPA + Hibernate | 4.x / 7.x |
+| Database | MySQL | 8.0 |
+| API Docs | SpringDoc OpenAPI + Swagger UI | 3.0.2 |
+| Email | Spring Mail (Gmail SMTP) | 4.x |
+| Validation | Jakarta Bean Validation | 4.x |
+| Build | Maven | 3.9 |
+| Boilerplate | Lombok | 1.18 |
 
 ---
 
 ## 📄 License
 
-This project is licensed under the Apache License 2.0 — see the [LICENSE](LICENSE) file for details.
+Licensed under [Apache License 2.0](LICENSE).
 
 ---
 
-## 👤 Author
-
-**Gulshan Gupta**
-
-- GitHub: [@gulshangupta003](https://github.com/gulshangupta003)
+<p align="center">
+  Built with ☕ by <a href="https://github.com/gulshangupta003"><b>Gulshan Gupta</b></a>
+</p>
