@@ -2,20 +2,22 @@ package com.freshco.service.impl;
 
 import com.freshco.dto.request.LoginRequestDto;
 import com.freshco.dto.request.RegisterRequestDto;
+import com.freshco.dto.request.ResendOtpRequestDto;
+import com.freshco.dto.request.VerifyEmailRequestDto;
 import com.freshco.dto.response.UserDto;
 import com.freshco.enums.Role;
 import com.freshco.entity.User;
 import com.freshco.exception.BadRequestException;
+import com.freshco.exception.ResourceNotFoundException;
 import com.freshco.repository.UserRepository;
-import com.freshco.security.CustomUserDetails;
 import com.freshco.security.JwtService;
 import com.freshco.service.AuthService;
 import com.freshco.service.LoginAttemptService;
+import com.freshco.service.OtpService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final LoginAttemptService loginAttemptService;
+    private final OtpService otpService;
 
     @Override
     public UserDto register(RegisterRequestDto request) {
@@ -37,14 +40,16 @@ public class AuthServiceImpl implements AuthService {
         }
 
         log.info("Registering user with email: {}", request.getEmail());
+
         String email = request.getEmail().trim().toLowerCase();
+
         if (userRepository.existsByEmail(email)) {
             throw new BadRequestException("Email already exists: " + email);
         }
 
         User user = User.builder()
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
+                .firstName(request.getFirstName().trim())
+                .lastName(request.getLastName().trim())
                 .email(request.getEmail())
                 .mobileNumber(request.getMobileNumber())
                 .password(passwordEncoder.encode(request.getPassword()))
@@ -54,9 +59,9 @@ public class AuthServiceImpl implements AuthService {
         User savedUser = userRepository.save(user);
         log.info("User registered successfully with email: {}", savedUser.getEmail());
 
-        String jwtToken = jwtService.generateToken(email);
+        otpService.sendOtp(savedUser);
 
-        return mapToUserDto(savedUser, jwtToken);
+        return mapToUserDto(savedUser, jwtService.generateToken(email));
     }
 
     @Override
@@ -66,6 +71,10 @@ public class AuthServiceImpl implements AuthService {
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new BadRequestException("Invalid email or password"));
+
+        if (!user.isEmailVerified()) {
+            throw new BadRequestException("Email not verified. Please verify your email first");
+        }
 
         loginAttemptService.checkAccountLock(user);
 
@@ -77,10 +86,37 @@ public class AuthServiceImpl implements AuthService {
         }
 
         loginAttemptService.resetFailedAttempts(user);
-
         log.info("Login successful for user id: {}", user.getId());
 
         return mapToUserDto(user, jwtService.generateToken(user.getEmail()));
+    }
+
+    @Override
+    public void verifyEmail(VerifyEmailRequestDto request) {
+        String email = request.getEmail().trim().toLowerCase();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        if (user.isEmailVerified()) {
+            throw new BadRequestException("Email is already verified");
+        }
+
+        otpService.verifyOtp(user, request.getOtp());
+    }
+
+    @Override
+    public void resendOtp(ResendOtpRequestDto request) {
+        String email = request.getEmail().trim().toLowerCase();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with email: " + email));
+
+        if (user.isEmailVerified()) {
+            throw new BadRequestException("Email is already verified");
+        }
+
+        otpService.sendOtp(user);
     }
 
     private UserDto mapToUserDto(User user, String token) {
@@ -91,6 +127,7 @@ public class AuthServiceImpl implements AuthService {
                 .email(user.getEmail())
                 .mobileNumber(user.getMobileNumber())
                 .role(user.getRole())
+                .emailVerified(user.isEmailVerified())
                 .token(token)
                 .build();
     }

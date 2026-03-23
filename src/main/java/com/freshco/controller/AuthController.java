@@ -2,6 +2,8 @@ package com.freshco.controller;
 
 import com.freshco.dto.request.LoginRequestDto;
 import com.freshco.dto.request.RegisterRequestDto;
+import com.freshco.dto.request.ResendOtpRequestDto;
+import com.freshco.dto.request.VerifyEmailRequestDto;
 import com.freshco.dto.response.UserDto;
 import com.freshco.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,4 +37,21 @@ public class AuthController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/verify-email")
+    @Operation(summary = "Verify email", description = "Verifies email using the 6-digit OTP sent to email")
+    public ResponseEntity<Void> verifyEmail(@Valid @RequestBody VerifyEmailRequestDto request) {
+        authService.verifyEmail(request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/resend-otp")
+    @Operation(summary = "Resend OTP", description = "Resends verification OTP to email")
+    public ResponseEntity<Void> resendOtp(@Valid @RequestBody ResendOtpRequestDto request) {
+        authService.resendOtp(request);
+
+        return ResponseEntity.ok().build();
+    }
+
 }
