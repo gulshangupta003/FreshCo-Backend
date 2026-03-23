@@ -1,9 +1,6 @@
 package com.freshco.controller;
 
-import com.freshco.dto.request.LoginRequestDto;
-import com.freshco.dto.request.RegisterRequestDto;
-import com.freshco.dto.request.ResendOtpRequestDto;
-import com.freshco.dto.request.VerifyEmailRequestDto;
+import com.freshco.dto.request.*;
 import com.freshco.dto.response.UserDto;
 import com.freshco.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,6 +47,22 @@ public class AuthController {
     @Operation(summary = "Resend OTP", description = "Resends verification OTP to email")
     public ResponseEntity<Void> resendOtp(@Valid @RequestBody ResendOtpRequestDto request) {
         authService.resendOtp(request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/forgot-password")
+    @Operation(summary = "Forgot password", description = "Sends password reset token to email")
+    public ResponseEntity<Void> forgotPassword(@Valid @RequestBody ForgotPasswordRequestDto request) {
+        authService.forgotPassword(request);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/reset-password")
+    @Operation(summary = "Reset password", description = "Resets password using the token received via email")
+    public ResponseEntity<Void> resetPassword(@Valid @RequestBody ResetPasswordRequestDto request) {
+        authService.resetPassword(request);
 
         return ResponseEntity.ok().build();
     }

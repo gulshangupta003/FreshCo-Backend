@@ -1,9 +1,6 @@
 package com.freshco.service;
 
-import com.freshco.dto.request.LoginRequestDto;
-import com.freshco.dto.request.RegisterRequestDto;
-import com.freshco.dto.request.ResendOtpRequestDto;
-import com.freshco.dto.request.VerifyEmailRequestDto;
+import com.freshco.dto.request.*;
 import com.freshco.dto.response.UserDto;
 
 public interface AuthService {
@@ -15,5 +12,9 @@ public interface AuthService {
     void verifyEmail(VerifyEmailRequestDto request);
 
     void resendOtp(ResendOtpRequestDto request);
+
+    void forgotPassword(ForgotPasswordRequestDto request);
+
+    void resetPassword(ResetPasswordRequestDto request);
 
 }
